@@ -61,7 +61,6 @@ class FacebookBatchRequest(FacebookRequest):
             self.add(request=requests)
 
     def add(self, request, name=None):
-
         if isinstance(request, list):
             for index, req  in enumerate(request):
                 self.add(req, index)
@@ -90,9 +89,7 @@ class FacebookBatchRequest(FacebookRequest):
         }
         self._params.update(params)
 
-
     def request_entity_to_batch_array(self, request, request_name):
-
         batch = {
             'headers': request.headers,
             'method': request.method,
