@@ -1,4 +1,4 @@
-from facebook_sdk.request import FacebookRequest
+from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 
 
 class FakeFacebookRequest(FacebookRequest):
@@ -10,4 +10,11 @@ class FakeFacebookRequest(FacebookRequest):
             params={},
             headers={},
             graph_version=None
+        )
+
+class FakeFacebookBatchRequest(FacebookBatchRequest):
+    def __init__(self, requests):
+        super(FakeFacebookBatchRequest, self).__init__(
+            access_token='fake_token',
+            requests=requests
         )

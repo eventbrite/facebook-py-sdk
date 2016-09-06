@@ -2,11 +2,10 @@ from unittest import TestCase
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
+from tests import FakeFacebookBatchRequest
 
 
 class TestFacebookRequest(TestCase):
-
-
     def setUp(self):
         super(TestFacebookRequest, self).setUp()
 
@@ -29,7 +28,7 @@ class TestFacebookRequest(TestCase):
         self.assertEqual(request.params.get('access_token'), access_token)
 
     def test_post_params(self):
-        expected_post_params = {'foo':'bar'}
+        expected_post_params = {'foo': 'bar'}
         request = FacebookRequest(
             method='post',
             params=expected_post_params
@@ -61,19 +60,43 @@ class TestFacebookRequest(TestCase):
 
 
 class TestFacebookBatchRequest(TestCase):
-
     def setUp(self):
         super(TestFacebookBatchRequest, self).setUp()
-        self.batch_request = FacebookBatchRequest()
+        self.req1 = FacebookRequest(endpoint='123', method='get', headers={'Conent-Type': 'application/json'})
+        self.req2 = FacebookRequest(endpoint='123', method='post', params={'foo': 'bar'})
+        self.req3 = FacebookRequest(access_token='other_token', endpoint='123', method='delete')
 
-    def test_add(self):
-        self.fail()
+    def test_add_a_list_of_requests(self):
+        requests = [self.req1, self.req2]
+        batch_request = FacebookBatchRequest(requests=[self.req1, self.req2])
 
+        for request in batch_request.requests:
+            self.assertTrue(request['request'] in requests)
+
+    def test_add_a_named_dict_of_requests(self):
+        requests = {
+            'first': self.req1,
+            'second': self.req2,
+            'third': self.req3,
+        }
+        batch_request = FacebookBatchRequest(requests=requests)
+
+        for request in batch_request.requests:
+            self.assertTrue(request['request'] in requests)
     def test_add_access_token(self):
         self.fail()
 
     def test_prepare_batch_request(self):
-        self.fail()
+        requests = [self.req1, self.req2]
+        batch_request = FacebookBatchRequest(access_token='fake_token', requests=[self.req1, self.req2, self.req3])
+        expected_batch = (
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "get", "relative_url": "v2.5/123/", "name": "0"}, '
+            '{"body": "foo=bar", "headers": {}, "method": "post", "relative_url": "v2.5/123/", "name": "1"}, '
+            '{"access_token": "other_token", "headers": {}, "method": "delete", "relative_url": "v2.5/123/", "name": "2"}]'
+        )
+        batch_request.prepare_batch_request()
+        self.assertEqual(batch_request.post_params['batch'], expected_batch)
+        self.assertTrue(batch_request.post_params['include_headers'])
 
     def test_request_entity_to_batch_array(self):
         self.fail()

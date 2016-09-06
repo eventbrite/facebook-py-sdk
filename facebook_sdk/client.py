@@ -3,7 +3,7 @@ import requests
 
 from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
 from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
-from facebook_sdk.response import FacebookResponse
+from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
 from facebook_sdk.utils import force_slash_prefix
 
 
@@ -30,11 +30,12 @@ class FacebookClient(object):
 
     def send_request(self, request):
         """
-
         :type request: FacebookRequest
+        :rtype: FacebookResponse
         """
         (method, url, params, data, headers) = self._prepareRequest(request)
 
+        # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
         res = requests.request(
             method=method,
             url=url,
@@ -56,10 +57,16 @@ class FacebookClient(object):
 
     def send_batch_request(self, batch_request):
         """
-
         :type batch_request: FacebookBatchRequest
+
+        :rtype: FacebookBatchResponse
         """
         batch_request.prepare_batch_request()
-        response = self.send_request(request=batch_request)
+        batch_response = self.send_request(request=batch_request)
+
+        response = FacebookBatchResponse(
+            batch_request=batch_request,
+            batch_response=batch_response
+        )
 
         return response
