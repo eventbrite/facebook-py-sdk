@@ -1,5 +1,12 @@
-import json
-import urllib
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
 from facebook_sdk.utils import force_slash_prefix
@@ -44,7 +51,7 @@ class FacebookRequest(object):
     def url_encode_body(self):
         params = self.post_params
 
-        return urllib.urlencode(params) if params else None
+        return urlencode(params) if params else None
 
     def add_headers(self, headers):
         for header in headers:

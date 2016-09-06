@@ -1,4 +1,7 @@
-import json
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 from facebook_sdk.exceptions import FacebookResponseException
 from facebook_sdk.request import FacebookRequest, FacebookBatchRequest

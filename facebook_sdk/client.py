@@ -1,4 +1,7 @@
-import urllib
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 import requests
 
 from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
@@ -41,7 +44,7 @@ class FacebookClient(object):
             url=url,
             headers=headers,
             params=params,
-            data=urllib.urlencode(data),
+            data=urlencode(data),
             timeout=DEFAULT_REQUEST_TIMEOUT
         )
         response = FacebookResponse(
