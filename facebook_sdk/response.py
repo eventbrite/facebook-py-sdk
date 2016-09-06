@@ -5,9 +5,9 @@ from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 
 
 class FacebookResponse(object):
+
     def __init__(self, request, http_status_code, body, headers=None):
         """
-
         :type headers: dict
         :type body: str
         :type http_status_code: int
@@ -53,10 +53,32 @@ class FacebookBatchResponse(FacebookResponse):
         super(FacebookBatchResponse, self).__init__(
             request=batch_request,
             body=batch_response.body,
-            http_status_code=batch_response.http_status_code
+            http_status_code=batch_response.http_status_code,
+            headers=batch_response.headers
         )
         self.responses = self.build_responses(self.json_body)
 
     def build_responses(self, json_body):
-        for i,  in enumerate():
-            
+
+        responses = []
+        for index, response  in enumerate(json_body):
+            request_name = self.request.requests[index]['name']
+            request = self.request.requests[index]['request']
+
+            body = json.dumps(response.get('body'))
+            code = response.get('code')
+            headers = response.get('headers')
+
+            responses.insert(
+                index,
+                {   'name': request_name,
+                    'response': FacebookResponse(
+                        request=request,
+                        body=body,
+                        headers=headers,
+                        http_status_code=code,
+                    ),
+                }
+            )
+
+        return responses

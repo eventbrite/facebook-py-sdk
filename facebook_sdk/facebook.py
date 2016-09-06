@@ -35,10 +35,10 @@ class Facebook(object):
 
         return response
 
-    def send_batch_request(self, batch_requests, access_token=None, graph_version=None):
+    def send_batch_request(self, requests, access_token=None, graph_version=None):
 
         batch_request = FacebookBatchRequest(
-            requests=batch_requests,
+            requests=requests,
             access_token=access_token,
             graph_version=graph_version if graph_version else DEFAULT_GRAPH_VERSION,
         )

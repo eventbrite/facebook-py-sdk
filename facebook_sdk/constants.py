@@ -1,5 +1,8 @@
 BASE_GRAPH_URL = 'https://graph.facebook.com'
 
+GRAPH_VERSION_V2_2 = 'v2.2'
+GRAPH_VERSION_V2_3 = 'v2.3'
+GRAPH_VERSION_V2_4 = 'v2.4'
 GRAPH_VERSION_V2_5 = 'v2.5'
 GRAPH_VERSION_V2_6 = 'v2.6'
 GRAPH_VERSION_V2_7 = 'v2.7'
