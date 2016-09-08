@@ -14,34 +14,34 @@ class FacebookResponseException(Exception):
     @staticmethod
     def create(response):
         data = response.json_body
+        error = (
+            data
+            if data.get('error', {}).get('code') is None and data.get('code') is not None
+            else data.get('error', {})
+        )
 
-        if data.get('error', {}).get('code') is None and data.get('code') is not None:
-            data = {'error': data}
+        code = error.get('code', -1)
+        sub_code = error.get('error_subcode', -1)
+        message = error.get('message', 'Unknown error from Graph.')
 
-        code = data.get('error').get('code')
-        message = data.get('error').get('message') if data.get('error').get('message') else 'Unknown error from Graph.'
-        sub_code = data.get('error').get('error_subcode')
+        if (
+            sub_code in SUB_CODE_AUTH_EXCEPTION_CODES or
+            code in AUTH_EXCEPTION_CODES or
+            error.get('type') == 'OAuthException'
+        ):
+            exception = FacebookAuthenticationException
+        elif sub_code in SUB_CODE_RESUMABLE_UPLOAD_EXCEPTION_CODES:
+            exception = FacebookResumableUploadException
+        elif code in SERVER_EXCEPTION_CODES:
+            exception = FacebookServerException
+        elif code in THROTTLE_EXCEPTION_CODES:
+            exception = FacebookThrottleException
+        elif code == 10 or 200 <= code <= 299:
+            exception = FacebookAuthorizationException
+        else:
+            exception = FacebookOtherException
 
-        if sub_code:
-            if sub_code in (SUB_CODE_AUTH_EXCEPTION_CODES):
-                return FacebookAuthenticationException(response=response, code=code, message=message)
-            if sub_code in (SUB_CODE_RESUMABLE_UPLOAD_EXCEPTION_CODES):
-                return FacebookResumableUploadException(response=response, code=code, message=message)
-
-        if code in AUTH_EXCEPTION_CODES:
-            return FacebookAuthenticationException(response=response, code=code, message=message)
-        if code in SERVER_EXCEPTION_CODES:
-            return FacebookServerException(response=response, code=code, message=message)
-        if code in THROTTLE_EXCEPTION_CODES:
-            return FacebookThrottleException(response=response, code=code, message=message)
-
-        if code == 10 or code >= 200 and code <= 299:
-            return FacebookAuthorizationException(response=response, code=code, message=message)
-
-        if data.get('error').get('type', None) == 'OAuthException':
-            return FacebookAuthenticationException(response=response, code=code, message=message)
-
-        return FacebookOtherException(response=response, code=code, message=message)
+        return exception(response=response, code=code, message=message)
 
 
 class FacebookAuthenticationException(FacebookResponseException):
