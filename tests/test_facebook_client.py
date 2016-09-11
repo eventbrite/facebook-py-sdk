@@ -59,8 +59,11 @@ class TestFacebookClient(TestCase):
                 status_code=400,
                 content='{"error": {"code": 100}}')
         )
-        with self.assertRaises(FacebookResponseException) as context:
-            self.client.send_request(self.request)
+        self.assertRaises(
+            FacebookResponseException,
+            self.client.send_request,
+            self.request,
+        )
 
     def test_send_batch_request(self):
         self.client = FakeFacebookClient(
@@ -72,19 +75,21 @@ class TestFacebookClient(TestCase):
         self.assertIsInstance(response, FacebookBatchResponse)
 
     def test_send_empty_batch_request(self):
-        with self.assertRaises(FacebookSDKException) as context:
-            self.client.send_batch_request(
-                batch_request=FacebookBatchRequest(
-                    access_token='fake_token'
-                )
-            )
+       self.assertRaises(
+           FacebookSDKException,
+            self.client.send_batch_request,
+            batch_request=FacebookBatchRequest(
+                access_token='fake_token'
+            ),
+        )
 
     def test_send_over_limit_batch_request(self):
-        with self.assertRaises(FacebookSDKException) as context:
-            requests = [self.request] * 51
-            self.client.send_batch_request(
-                batch_request=FacebookBatchRequest(
-                    access_token='fake_token',
-                    requests=requests
-                )
-            )
+        requests = [self.request] * 51
+        self.assertRaises(
+            FacebookSDKException,
+            self.client.send_batch_request,
+            batch_request=FacebookBatchRequest(
+                access_token='fake_token',
+                requests=requests
+            ),
+        )
