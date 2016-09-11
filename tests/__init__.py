@@ -22,13 +22,13 @@ def safe_repr(obj, short=False):
 
 class TestCase(UnitTestCase):
     def assertIsInstance(self, obj, cls, msg=None):
-        """ backward compatibility python2.6
-        """
+        """ backward compatibility python2.6 """
         if not isinstance(obj, cls):
             standardMsg = '%s is not an instance of %r' % (safe_repr(obj), cls)
             self.fail(self._formatMessage(msg, standardMsg))
 
     def assertDictEqual(self, d1, d2, msg=None):
+        """ backward compatibility python2.6 """
         self.assertIsInstance(d1, dict, 'First argument is not a dictionary')
         self.assertIsInstance(d2, dict, 'Second argument is not a dictionary')
 
@@ -40,6 +40,12 @@ class TestCase(UnitTestCase):
             standardMsg = self._truncateMessage(standardMsg, diff)
             self.fail(self._formatMessage(msg, standardMsg))
 
+    def assertIn(self, member, container, msg=None):
+        """ backward compatibility python2.6 """
+        if member not in container:
+            standardMsg = '%s not found in %s' % (safe_repr(member),
+                                                  safe_repr(container))
+            self.fail(self._formatMessage(msg, standardMsg))
 
 class FakeFacebookRequest(FacebookRequest):
     def __init__(self):
