@@ -47,6 +47,7 @@ class TestCase(UnitTestCase):
                                                   safe_repr(container))
             self.fail(self._formatMessage(msg, standardMsg))
 
+
 class FakeFacebookRequest(FacebookRequest):
     def __init__(self):
         super(FakeFacebookRequest, self).__init__(

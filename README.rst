@@ -1,0 +1,2 @@
+[![Build Status](https://travis-ci.org/zetahernandez/facebook-python-sdk.svg?branch=master)](https://travis-ci.org/zetahernandez/facebook-python-sdk)
+[![Coverage Status](https://coveralls.io/repos/github/zetahernandez/facebook-python-sdk/badge.svg)](https://coveralls.io/github/zetahernandez/facebook-python-sdk)
