@@ -23,8 +23,10 @@ class TestFacebookResponse(TestCase):
             http_status_code=200
         )
 
-        with self.assertRaises(FacebookResponseException) as context:
-            response.raiseException()
+        self.assertRaises(
+            FacebookResponseException,
+            response.raiseException,
+        )
 
     def test_build_exception(self):
         response = FacebookResponse(

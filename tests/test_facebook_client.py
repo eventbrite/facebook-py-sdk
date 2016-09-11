@@ -44,7 +44,7 @@ class TestFacebookClient(TestCase):
         (method, url, params, data, headers) = self.client._prepareRequest(request=self.request)
 
         self.assertEqual(method, self.request.method)
-        self.assertEqual(url, '{}/{}'.format(BASE_GRAPH_URL, self.request.url))
+        self.assertEqual(url, '%s/%s' % (BASE_GRAPH_URL, self.request.url))
         self.assertEqual(params, self.request.params)
         self.assertIn('Content-Type', headers)
         self.assertEqual(headers['Content-Type'], 'application/x-www-form-urlencoded')

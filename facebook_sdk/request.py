@@ -140,7 +140,7 @@ class FacebookBatchRequest(FacebookRequest):
         if not requests_count:
             raise FacebookSDKException('Empty batch requests')
         if requests_count > MAX_REQUEST_BY_BATCH:
-            raise FacebookSDKException('The limit of requests in batch is {}'.format(MAX_REQUEST_BY_BATCH))
+            raise FacebookSDKException('The limit of requests in batch is %d' % MAX_REQUEST_BY_BATCH)
 
     def __iter__(self):
         return iter(self.requests)
