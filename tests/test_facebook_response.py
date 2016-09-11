@@ -1,10 +1,9 @@
 import json
-from unittest import TestCase
 
 from facebook_sdk.exceptions import FacebookResponseException
 from facebook_sdk.request import FacebookRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
-from . import FakeFacebookRequest, FakeFacebookBatchRequest
+from tests import FakeFacebookRequest, FakeFacebookBatchRequest, TestCase
 
 
 class TestFacebookResponse(TestCase):
@@ -17,14 +16,14 @@ class TestFacebookResponse(TestCase):
         )
         self.assertEqual(expected_body, response.json_body)
 
-    def test_raiseException(self):
+    def test_raise_exception(self):
         response = FacebookResponse(
             request=FakeFacebookRequest,
             body=json.dumps({'error': {'foo': 'bar'}}),
             http_status_code=200
         )
 
-        with self.assertRaises(FacebookResponseException):
+        with self.assertRaises(FacebookResponseException) as context:
             response.raiseException()
 
     def test_build_exception(self):
@@ -37,9 +36,9 @@ class TestFacebookResponse(TestCase):
 
 
 class TestFacebookBatchResponse(TestCase):
-
     def setUp(self):
         super(TestFacebookBatchResponse, self).setUp()
+
         self.req1 = FacebookRequest(endpoint='123', method='get')
         self.req2 = FacebookRequest(endpoint='123', method='post', params={'foo': 'bar'})
         self.batch_request = FakeFacebookBatchRequest(requests=[self.req1, self.req2])
@@ -65,9 +64,10 @@ class TestFacebookBatchResponse(TestCase):
             batch_request=self.batch_request,
             batch_response=self.response,
         )
+
         self.assertEqual(len(batch_response.responses), 2)
+
         for index, response_dict in enumerate(batch_response.responses):
             request_dict = self.batch_request.requests[index]
-            self.assertEqual(response_dict.get('name'), request_dict.get('name') )
+            self.assertEqual(response_dict.get('name'), request_dict.get('name'))
             self.assertEqual(response_dict.get('response').request, request_dict.get('request'))
-

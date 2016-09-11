@@ -1,3 +1,7 @@
+from facebook_sdk.exceptions import FacebookSDKException
+
+MAX_REQUEST_BY_BATCH = 50
+
 try:
     import simplejson as json
 except ImportError:
@@ -78,6 +82,9 @@ class FacebookBatchRequest(FacebookRequest):
                 self.add(req, key)
             return
 
+        if not isinstance(request, FacebookRequest):
+            raise FacebookSDKException('Arguments must be of type dict, list or FacebookRequest.')
+
         self.add_access_token(request)
 
         self.requests.append({
@@ -87,6 +94,11 @@ class FacebookBatchRequest(FacebookRequest):
 
     def add_access_token(self, request):
         if not request.access_token:
+            access_token = self.access_token
+
+            if not access_token:
+                raise FacebookSDKException('Missing access token on FacebookRequest and FacebookBatchRequest')
+
             request.access_token = self.access_token
 
     def prepare_batch_request(self):
@@ -122,5 +134,13 @@ class FacebookBatchRequest(FacebookRequest):
 
         return json.dumps(json_requests)
 
+    def validate_batch_request_count(self):
+        requests_count = len(self.requests)
+
+        if not requests_count:
+            raise FacebookSDKException('Empty batch requests')
+        if requests_count > MAX_REQUEST_BY_BATCH:
+            raise FacebookSDKException('The limit of requests in batch is {}'.format(MAX_REQUEST_BY_BATCH))
+
     def __iter__(self):
-        iter(self.requests)
+        return iter(self.requests)

@@ -5,8 +5,15 @@ SERVER_EXCEPTION_CODES = (1, 2)
 THROTTLE_EXCEPTION_CODES = (4, 17, 341)
 CLIENT_EXCEPTION_CODES = (506,)
 
+class FacebookSDKException(Exception):
+    pass
 
-class FacebookResponseException(Exception):
+
+class FacebookRequestException(FacebookSDKException):
+    pass
+
+
+class FacebookResponseException(FacebookSDKException):
     def __init__(self, response, code, message, *args, **kwargs):
         super(FacebookResponseException, self).__init__(code, message)
         self.response = response

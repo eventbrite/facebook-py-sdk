@@ -16,6 +16,7 @@ class FacebookClient(object):
         """
 
         :type request: FacebookRequest
+        :rtype: tuple
         """
         request.add_headers([
             {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -38,15 +39,16 @@ class FacebookClient(object):
         """
         (method, url, params, data, headers) = self._prepareRequest(request)
 
-        # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
-        res = requests.request(
-            method=method,
-            url=url,
+
+        res = self.send(
+            data=data,
             headers=headers,
+            method=method,
             params=params,
-            data=urlencode(data),
+            url=url,
             timeout=DEFAULT_REQUEST_TIMEOUT
         )
+
         response = FacebookResponse(
             request=request,
             body=res.content,
@@ -58,12 +60,25 @@ class FacebookClient(object):
 
         return response
 
+    def send(self, data, headers, method, params, url, timeout):
+        # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
+        res = requests.request(
+            method=method,
+            url=url,
+            headers=headers,
+            params=params,
+            data=urlencode(data),
+            timeout=timeout
+        )
+        return res
+
     def send_batch_request(self, batch_request):
         """
         :type batch_request: FacebookBatchRequest
 
         :rtype: FacebookBatchResponse
         """
+        batch_request.validate_batch_request_count()
         batch_request.prepare_batch_request()
         batch_response = self.send_request(request=batch_request)
 

@@ -85,3 +85,6 @@ class FacebookBatchResponse(FacebookResponse):
             )
 
         return responses
+
+    def __iter__(self):
+        return iter(self.responses)
