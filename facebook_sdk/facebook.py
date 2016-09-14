@@ -10,7 +10,6 @@ class Facebook(object):
         super(Facebook, self).__init__()
         self.client = FacebookClient()
 
-
     def request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None):
         return FacebookRequest(
             method=method,
@@ -21,7 +20,6 @@ class Facebook(object):
             graph_version=graph_version,
         )
 
-
     def send_request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None):
         request = self.request(
             method=method,
@@ -29,7 +27,7 @@ class Facebook(object):
             endpoint=endpoint,
             params=params,
             headers=headers,
-            graph_version=graph_version if graph_version else DEFAULT_GRAPH_VERSION,
+            graph_version=graph_version or DEFAULT_GRAPH_VERSION,
         )
         response = self.client.send_request(request=request)
 
@@ -40,7 +38,7 @@ class Facebook(object):
         batch_request = FacebookBatchRequest(
             requests=requests,
             access_token=access_token,
-            graph_version=graph_version if graph_version else DEFAULT_GRAPH_VERSION,
+            graph_version=graph_version or DEFAULT_GRAPH_VERSION,
         )
 
         response = self.client.send_batch_request(batch_request=batch_request)

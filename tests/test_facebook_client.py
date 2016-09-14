@@ -75,8 +75,8 @@ class TestFacebookClient(TestCase):
         self.assertIsInstance(response, FacebookBatchResponse)
 
     def test_send_empty_batch_request(self):
-       self.assertRaises(
-           FacebookSDKException,
+        self.assertRaises(
+            FacebookSDKException,
             self.client.send_batch_request,
             batch_request=FacebookBatchRequest(
                 access_token='fake_token'

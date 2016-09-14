@@ -64,7 +64,7 @@ class FacebookBatchResponse(FacebookResponse):
     def build_responses(self, json_body):
 
         responses = []
-        for index, response  in enumerate(json_body):
+        for index, response in enumerate(json_body):
             request_name = self.request.requests[index]['name']
             request = self.request.requests[index]['request']
 
@@ -74,7 +74,8 @@ class FacebookBatchResponse(FacebookResponse):
 
             responses.insert(
                 index,
-                {   'name': request_name,
+                {
+                    'name': request_name,
                     'response': FacebookResponse(
                         request=request,
                         body=body,

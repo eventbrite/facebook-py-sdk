@@ -39,7 +39,6 @@ class FacebookClient(object):
         """
         (method, url, params, data, headers) = self._prepareRequest(request)
 
-
         res = self.send(
             data=data,
             headers=headers,

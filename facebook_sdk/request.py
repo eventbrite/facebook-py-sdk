@@ -1,4 +1,6 @@
+from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
 from facebook_sdk.exceptions import FacebookSDKException
+from facebook_sdk.utils import force_slash_prefix
 
 MAX_REQUEST_BY_BATCH = 50
 
@@ -12,8 +14,6 @@ try:
 except ImportError:
     from urllib import urlencode
 
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
-from facebook_sdk.utils import force_slash_prefix
 
 class FacebookRequest(object):
 
@@ -65,7 +65,12 @@ class FacebookRequest(object):
 class FacebookBatchRequest(FacebookRequest):
 
     def __init__(self, requests=None, access_token=None, graph_version=None):
-        super(FacebookBatchRequest, self).__init__(access_token=access_token, graph_version=graph_version, method=METHOD_POST, endpoint='',)
+        super(FacebookBatchRequest, self).__init__(
+            access_token=access_token,
+            graph_version=graph_version,
+            method=METHOD_POST,
+            endpoint='',
+        )
         self.requests = []
 
         if requests:
@@ -73,7 +78,7 @@ class FacebookBatchRequest(FacebookRequest):
 
     def add(self, request, name=None):
         if isinstance(request, list):
-            for index, req  in enumerate(request):
+            for index, req in enumerate(request):
                 self.add(req, index)
             return
 
@@ -128,9 +133,12 @@ class FacebookBatchRequest(FacebookRequest):
         return batch
 
     def requests_to_json(self):
-        json_requests = []
-        for request in self.requests:
-            json_requests.append(self.request_entity_to_batch_array(request=request['request'], request_name=request['name']))
+        json_requests = [
+            self.request_entity_to_batch_array(
+                request=request['request'],
+                request_name=request['name']
+            ) for request in self.requests
+        ]
 
         return json.dumps(json_requests)
 

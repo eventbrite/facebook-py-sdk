@@ -5,6 +5,7 @@ SERVER_EXCEPTION_CODES = (1, 2)
 THROTTLE_EXCEPTION_CODES = (4, 17, 341)
 CLIENT_EXCEPTION_CODES = (506,)
 
+
 class FacebookSDKException(Exception):
     pass
 
