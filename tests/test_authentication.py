@@ -107,7 +107,7 @@ class OAuth2ClientTest(TestCase):
             'client_id': 'app_id',
             'redirect_uri': 'https://foo.bar',
             'state': 'foo_state',
-            'sdk': 'facebook-python-sdk-{}'.format(VERSION),
+            'sdk': 'facebook-python-sdk-{version}'.format(version=VERSION),
             'scope': ','.join(scope),
             'foo': 'bar',
             'response_type': 'code',
