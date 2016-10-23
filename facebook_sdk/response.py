@@ -8,6 +8,9 @@ from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 
 
 class FacebookResponse(object):
+    """ A Facebook Response
+
+    """
 
     def __init__(self, request, http_status_code, body, headers=None):
         """
@@ -30,22 +33,38 @@ class FacebookResponse(object):
 
     @property
     def is_error(self):
+        """ Check if the response is an error-
+
+        """
         return 'error' in self.json_body
 
     def parse_body(self):
+        """ Parse the raw response to json.
+
+        """
         try:
             self.json_body = json.loads(self.body)
         except:
             self.json_body = {}
 
     def raiseException(self):
+        """ Raise the FacebookSDKException
+
+        """
         raise self.exception
 
     def build_exception(self):
+        """
+
+        :return:
+        """
         self.exception = FacebookResponseException.create(response=self)
 
 
 class FacebookBatchResponse(FacebookResponse):
+    """ A Facebook Batch Response
+
+    """
 
     def __init__(self, batch_request, batch_response):
         """
@@ -62,13 +81,16 @@ class FacebookBatchResponse(FacebookResponse):
         self.responses = self.build_responses(self.json_body)
 
     def build_responses(self, json_body):
+        """ Parse the json_body to a set of FacebookResponse.
 
+        :param json_body: parsed batch response
+        """
         responses = []
         for index, response in enumerate(json_body):
             request_name = self.request.requests[index]['name']
             request = self.request.requests[index]['request']
 
-            body = json.dumps(response.get('body'))
+            body = response.get('body')
             code = response.get('code')
             headers = response.get('headers')
 
@@ -88,4 +110,4 @@ class FacebookBatchResponse(FacebookResponse):
         return responses
 
     def __iter__(self):
-        return iter(self.responses)
+        return self.responses

@@ -1,17 +1,87 @@
+import os
+
+from facebook_sdk.authentication import OAuth2Client, AccessToken
 from facebook_sdk.client import FacebookClient
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION
+from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.request import (
     FacebookBatchRequest,
     FacebookRequest,
 )
 
+APP_ID_ENV_NAME = 'FACEBOOK_APP_ID'
+APP_SECRET_ENV_NAME = 'FACEBOOK_APP_SECRET'
+
+
+class FacebookApp(object):
+    def __init__(self, id, secret):
+        """
+        :type id: str
+        :type secret: str
+        """
+        super(FacebookApp, self).__init__()
+        self.id = id
+        self.secret = secret
+
+    def access_token(self):
+        """
+
+        :return:
+        """
+        from facebook_sdk.authentication import AccessToken
+        return AccessToken(
+            access_token='{id}|{secret}'.format(
+                id=self.id,
+                secret=self.secret
+            )
+        )
+
+
 class Facebook(object):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super(Facebook, self).__init__()
+
+        self.config = {
+            'app_id': os.getenv(APP_ID_ENV_NAME, kwargs.get('app_id')),
+            'app_secret': os.getenv(APP_ID_ENV_NAME, kwargs.get('app_secret')),
+            'default_graph_version': kwargs.get('default_graph_version', DEFAULT_GRAPH_VERSION),
+            'default_access_token': kwargs.get('default_access_token'),
+        }
+
+        if not self.config['app_id']:
+            raise FacebookSDKException(
+                'Required "app_id" key not supplied in config and could not find '
+                'fallback environment variable "{app_id_env_name}"'.format(
+                    app_id_env_name=APP_ID_ENV_NAME,
+                )
+            )
+        if not self.config['app_secret']:
+            raise FacebookSDKException(
+                'Required "app_secret" key not supplied in config '
+                'and could not find fallback environment variable "{app_secret_env_name}"'.format(
+                    app_secret_env_name=APP_SECRET_ENV_NAME,
+                )
+            )
+
+        self.default_graph_version = self.config.get('default_graph_version')
+
+        if self.config.get('default_access_token'):
+            self._set_default_access_token(self.config.get('default_access_token'))
+
+        self.app = FacebookApp(self.config['app_id'], self.config['app_secret'])
         self.client = FacebookClient()
+        self.oauth_client = OAuth2Client(
+            app=self.app,
+            client=self.client,
+            graph_version=self.default_graph_version,
+        )
 
     def request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+        access_token = access_token or getattr(self, 'default_access_token', None)
+        graph_version = graph_version or self.default_graph_version
+
         return FacebookRequest(
+            app=self.app,
             method=method,
             access_token=access_token,
             endpoint=endpoint,
@@ -27,19 +97,33 @@ class Facebook(object):
             endpoint=endpoint,
             params=params,
             headers=headers,
-            graph_version=graph_version or DEFAULT_GRAPH_VERSION,
+            graph_version=graph_version,
         )
         response = self.client.send_request(request=request)
 
         return response
 
+    def send_fb_request(self, request):
+        return self.client.send_request(request=request)
+
     def send_batch_request(self, requests, access_token=None, graph_version=None):
+        access_token = access_token or getattr(self, 'default_access_token', None)
+        graph_version = graph_version or self.default_graph_version
 
         batch_request = FacebookBatchRequest(
+            app=self.app,
             requests=requests,
             access_token=access_token,
-            graph_version=graph_version or DEFAULT_GRAPH_VERSION,
+            graph_version=graph_version,
         )
 
         response = self.client.send_batch_request(batch_request=batch_request)
         return response
+
+    def _set_default_access_token(self, access_token):
+        if isinstance(access_token, str):
+            self.default_access_token = AccessToken(access_token=access_token)
+        elif isinstance(access_token, AccessToken):
+            self.default_access_token = access_token
+        else:
+            raise ValueError('The default access token must be of type "str" or AccessToken')

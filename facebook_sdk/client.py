@@ -61,12 +61,14 @@ class FacebookClient(object):
 
     def send(self, data, headers, method, params, url, timeout):
         # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
+        if data:
+            data = urlencode(data)
         res = requests.request(
             method=method,
             url=url,
             headers=headers,
             params=params,
-            data=urlencode(data),
+            data=data,
             timeout=timeout
         )
         return res

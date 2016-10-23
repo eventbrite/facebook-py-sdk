@@ -1,4 +1,4 @@
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION
+from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
 from tests import TestCase
 
@@ -11,7 +11,7 @@ class TestFacebookRequest(TestCase):
         access_token = 'fake_token'
         request = FacebookRequest(
             access_token=access_token,
-            method='get',
+            method=METHOD_GET,
         )
         self.assertTrue('access_token' in request.params)
         self.assertEqual(request.params.get('access_token'), access_token)
@@ -20,7 +20,7 @@ class TestFacebookRequest(TestCase):
         access_token = 'fake_token'
         request = FacebookRequest(
             access_token=access_token,
-            method='post',
+            method=METHOD_POST,
         )
         self.assertTrue('access_token' in request.params)
         self.assertEqual(request.params.get('access_token'), access_token)
@@ -28,7 +28,7 @@ class TestFacebookRequest(TestCase):
     def test_post_params(self):
         expected_post_params = {'foo': 'bar'}
         request = FacebookRequest(
-            method='post',
+            method=METHOD_POST,
             params=expected_post_params
         )
         self.assertFalse(request.params)
@@ -36,7 +36,7 @@ class TestFacebookRequest(TestCase):
 
     def test_encoded_body(self):
         request = FacebookRequest(
-            method='post',
+            method=METHOD_POST,
             params={'foo': 'bar'}
         )
         self.assertFalse(request.params)
@@ -62,18 +62,18 @@ class TestFacebookBatchRequest(TestCase):
         super(TestFacebookBatchRequest, self).setUp()
         self.req1 = FacebookRequest(
             endpoint='123',
-            method='get',
+            method=METHOD_GET,
             headers={'Conent-Type': 'application/json'}
         )
         self.req2 = FacebookRequest(
             endpoint='123',
-            method='post',
+            method=METHOD_POST,
             params={'foo': 'bar'}
         )
         self.req3 = FacebookRequest(
             access_token='other_token',
             endpoint='123',
-            method='delete'
+            method=METHOD_DELETE
         )
 
     def test_add_a_list_of_requests(self):
@@ -107,9 +107,9 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req2, self.req3]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "get", "relative_url": "v2.5/123/", "name": "0"}, '
-            '{"body": "foo=bar", "headers": {}, "method": "post", "relative_url": "v2.5/123/", "name": "1"}, '
-            '{"access_token": "other_token", "headers": {}, "method": "delete", "relative_url": "v2.5/123/", "name": "2"}]'
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "v2.5/123/", "name": "0"}, '
+            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "v2.5/123/", "name": "1"}, '
+            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "v2.5/123/", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))

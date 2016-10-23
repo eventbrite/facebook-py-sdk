@@ -1,5 +1,6 @@
 import json
 
+from facebook_sdk.constants import METHOD_GET, METHOD_POST
 from facebook_sdk.exceptions import FacebookResponseException
 from facebook_sdk.request import FacebookRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
@@ -41,8 +42,8 @@ class TestFacebookBatchResponse(TestCase):
     def setUp(self):
         super(TestFacebookBatchResponse, self).setUp()
 
-        self.req1 = FacebookRequest(endpoint='123', method='get')
-        self.req2 = FacebookRequest(endpoint='123', method='post', params={'foo': 'bar'})
+        self.req1 = FacebookRequest(endpoint='123', method=METHOD_GET)
+        self.req2 = FacebookRequest(endpoint='123', method=METHOD_POST, params={'foo': 'bar'})
         self.batch_request = FakeFacebookBatchRequest(requests=[self.req1, self.req2])
         self.response = FacebookResponse(
             request=self.batch_request,
