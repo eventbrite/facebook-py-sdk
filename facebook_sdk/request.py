@@ -194,7 +194,7 @@ class FacebookBatchRequest(FacebookRequest):
                 request=request['request'],
                 request_name=request['name']
             ) for request in self.requests
-            ]
+        ]
 
         return json.dumps(json_requests)
 
