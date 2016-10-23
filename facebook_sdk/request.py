@@ -66,7 +66,7 @@ class FacebookRequest(object):
 
         :rtype: str
         """
-        return force_slash_prefix(self.graph_version) + force_slash_prefix(self.endpoint)
+        return force_slash_prefix(self.graph_version) + self.endpoint
 
     @property
     def url_encode_body(self):

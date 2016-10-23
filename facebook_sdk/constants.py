@@ -1,5 +1,5 @@
 BASE_GRAPH_URL = 'https://graph.facebook.com'
-BASE_AUTHORIZATION_URL = 'https://www.facebook.com';
+BASE_AUTHORIZATION_URL = 'https://www.facebook.com'
 
 GRAPH_VERSION_V2_2 = 'v2.2'
 GRAPH_VERSION_V2_3 = 'v2.3'

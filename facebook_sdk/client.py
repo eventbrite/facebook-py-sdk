@@ -22,7 +22,7 @@ class FacebookClient(object):
             {'Content-Type': 'application/x-www-form-urlencoded'}
         ])
 
-        url = force_slash_prefix(BASE_GRAPH_URL) + request.url
+        url = BASE_GRAPH_URL + request.url
 
         return (
             request.method,

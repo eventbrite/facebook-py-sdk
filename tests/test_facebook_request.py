@@ -1,5 +1,6 @@
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
+from facebook_sdk.utils import force_slash_prefix
 from tests import TestCase
 
 
@@ -49,12 +50,12 @@ class TestFacebookRequest(TestCase):
         self.assertEqual(request.graph_version, DEFAULT_GRAPH_VERSION)
 
     def test_endpoint_url(self):
-        request = FacebookRequest(endpoint='foo')
-        self.assertEqual(request.url, DEFAULT_GRAPH_VERSION + '/foo/')
+        request = FacebookRequest(endpoint='/foo')
+        self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION) + '/foo')
 
     def test_empty_endpoint_url(self):
         request = FacebookRequest(endpoint='')
-        self.assertEqual(request.url, DEFAULT_GRAPH_VERSION + '/')
+        self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION))
 
 
 class TestFacebookBatchRequest(TestCase):
@@ -107,9 +108,9 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req2, self.req3]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "v2.5/123/", "name": "0"}, '
-            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "v2.5/123/", "name": "1"}, '
-            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "v2.5/123/", "name": "2"}]'
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "v2.5/123", "name": "0"}, '
+            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "v2.5/123", "name": "1"}, '
+            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "v2.5/123", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))

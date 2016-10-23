@@ -199,16 +199,14 @@ class OAuth2Client(object):
 
         # For exchanging a short lived token with a long lived token.
         # The expiration time in seconds will be returned as "expires".
-        expires_at = data.get('expires')
-
-        if not expires_at:
+        expires_at = None
+        if data.get('expires'):
+            expires_at = datetime.datetime.utcfromtimestamp(int(data.get('expires')))
+        elif data.get('expires_in'):
             # For exchanging a code for a short lived access token.
             # The expiration time in seconds will be returned as "expires_in".
             # See: https://developers.facebook.com/docs/facebook-login/access-tokens#long-via-code
-            expires_at = data.get('expires_in')
-
-        if expires_at:
-            expires_at = datetime.datetime.utcfromtimestamp(int(expires_at))
+            expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds=(data.get('expires_in')))
 
         return AccessToken(
             access_token=data.get('access_token'),
