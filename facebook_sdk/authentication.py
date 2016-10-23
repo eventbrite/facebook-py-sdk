@@ -25,7 +25,7 @@ class AccessToken(object):
             self.expires_at = expires_at
 
     def app_secret_proof(self, secret):
-        return hmac.new(bytearray(secret, 'ascii'), self.access_token, hashlib.sha256).hexdigest()
+        return hmac.new(bytes(secret), self.access_token, hashlib.sha256).hexdigest()
 
     def is_app_access_token(self):
         return len(self.access_token.split('|')) == 2
