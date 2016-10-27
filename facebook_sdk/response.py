@@ -26,10 +26,10 @@ class FacebookResponse(object):
         self.http_status_code = http_status_code
         self.headers = headers
 
-        self.parse_body()
+        self._parse_body()
 
         if self.is_error:
-            self.build_exception()
+            self._build_exception()
 
     @property
     def is_error(self):
@@ -38,7 +38,7 @@ class FacebookResponse(object):
         """
         return 'error' in self.json_body
 
-    def parse_body(self):
+    def _parse_body(self):
         """ Parse the raw response to json.
 
         """
@@ -53,7 +53,7 @@ class FacebookResponse(object):
         """
         raise self.exception
 
-    def build_exception(self):
+    def _build_exception(self):
         """
 
         :return:
@@ -110,4 +110,4 @@ class FacebookBatchResponse(FacebookResponse):
         return responses
 
     def __iter__(self):
-        return self.responses
+        return iter(self.responses)

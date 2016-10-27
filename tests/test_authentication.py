@@ -62,7 +62,10 @@ class TestAccessToken(TestCase):
 class OAuth2ClientTest(TestCase):
     def setUp(self):
         super(OAuth2ClientTest, self).setUp()
-        self.app = FacebookApp(id='app_id', secret='secret')
+        self.app = FacebookApp(
+            app_id='app_id',
+            app_secret='secret'
+        )
 
     def test_debug_token(self):
         fb_client = FakeOAuth2Client(

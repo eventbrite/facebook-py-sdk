@@ -1,9 +1,3 @@
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
-from facebook_sdk.exceptions import FacebookSDKException
-from facebook_sdk.utils import force_slash_prefix
-
-MAX_REQUEST_BY_BATCH = 50
-
 try:
     import simplejson as json
 except ImportError:
@@ -13,6 +7,12 @@ try:
     from urllib.parse import urlencode
 except ImportError:
     from urllib import urlencode
+
+from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
+from facebook_sdk.exceptions import FacebookSDKException
+from facebook_sdk.utils import force_slash_prefix
+
+MAX_REQUEST_BY_BATCH = 50
 
 
 class FacebookRequest(object):
@@ -194,7 +194,7 @@ class FacebookBatchRequest(FacebookRequest):
                 request=request['request'],
                 request_name=request['name']
             ) for request in self.requests
-        ]
+            ]
 
         return json.dumps(json_requests)
 

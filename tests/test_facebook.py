@@ -23,7 +23,6 @@ class TestFacebook(TestCase):
 
         self.assertEqual(self.facebook.app.id, '123')
         self.assertEqual(self.facebook.app.secret, 'secret')
-        self.assertEqual(self.facebook.app.secret, 'secret')
         self.assertEqual(self.facebook.default_graph_version, 'v2.6')
         self.assertEqual(str(self.facebook.default_access_token), 'my_token')
 

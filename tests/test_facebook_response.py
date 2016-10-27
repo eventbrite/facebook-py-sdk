@@ -70,7 +70,7 @@ class TestFacebookBatchResponse(TestCase):
 
         self.assertEqual(len(batch_response.responses), 2)
 
-        for index, response_dict in enumerate(batch_response.responses):
+        for index, response_dict in enumerate(batch_response):
             request_dict = self.batch_request.requests[index]
             self.assertEqual(response_dict.get('name'), request_dict.get('name'))
             self.assertEqual(response_dict.get('response').request, request_dict.get('request'))

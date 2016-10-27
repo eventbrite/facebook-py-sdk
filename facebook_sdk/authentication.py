@@ -2,12 +2,12 @@ import datetime
 import hashlib
 import hmac
 
-from facebook_sdk.exceptions import FacebookSDKException
-
 try:
     from urllib.parse import urlencode
 except ImportError:
     from urllib import urlencode
+
+from facebook_sdk.exceptions import FacebookSDKException
 
 from facebook_sdk import __VERSION__ as VERSION
 from facebook_sdk import constants

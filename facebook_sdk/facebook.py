@@ -14,14 +14,14 @@ APP_SECRET_ENV_NAME = 'FACEBOOK_APP_SECRET'
 
 
 class FacebookApp(object):
-    def __init__(self, id, secret):
+    def __init__(self, app_id, app_secret):
         """
         :type id: str
         :type secret: str
         """
         super(FacebookApp, self).__init__()
-        self.id = id
-        self.secret = secret
+        self.id = app_id
+        self.secret = app_secret
 
     def access_token(self):
         """
@@ -66,9 +66,12 @@ class Facebook(object):
         self.default_graph_version = self.config.get('default_graph_version')
 
         if self.config.get('default_access_token'):
-            self._set_default_access_token(self.config.get('default_access_token'))
+            self.set_default_access_token(self.config.get('default_access_token'))
 
-        self.app = FacebookApp(self.config['app_id'], self.config['app_secret'])
+        self.app = FacebookApp(
+            app_id=self.config['app_id'],
+            app_secret=self.config['app_secret']
+        )
         self.client = FacebookClient()
         self.oauth_client = OAuth2Client(
             app=self.app,
@@ -99,11 +102,14 @@ class Facebook(object):
             headers=headers,
             graph_version=graph_version,
         )
-        response = self.client.send_request(request=request)
+        response = self.send_fb_request(request=request)
 
         return response
 
     def send_fb_request(self, request):
+        """
+        :type request: FacebookRequest
+        """
         return self.client.send_request(request=request)
 
     def send_batch_request(self, requests, access_token=None, graph_version=None):
@@ -120,7 +126,7 @@ class Facebook(object):
         response = self.client.send_batch_request(batch_request=batch_request)
         return response
 
-    def _set_default_access_token(self, access_token):
+    def set_default_access_token(self, access_token):
         if isinstance(access_token, str):
             self.default_access_token = AccessToken(access_token=access_token)
         elif isinstance(access_token, AccessToken):
