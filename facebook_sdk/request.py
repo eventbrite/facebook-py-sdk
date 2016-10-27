@@ -10,7 +10,7 @@ except ImportError:
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
 from facebook_sdk.exceptions import FacebookSDKException
-from facebook_sdk.utils import force_slash_prefix
+from facebook_sdk.utils import force_slash_prefix, remove_params_from_url, get_params_from_url
 
 MAX_REQUEST_BY_BATCH = 50
 
@@ -25,9 +25,9 @@ class FacebookRequest(object):
         super(FacebookRequest, self).__init__()
 
         # Default empty dicts for dict params.
-        headers = {} if headers is None else headers
-        params = {} if params is None else params
-        graph_version = DEFAULT_GRAPH_VERSION if graph_version is None else graph_version
+        headers = headers or {}
+        params = params or {}
+        graph_version = graph_version or DEFAULT_GRAPH_VERSION
 
         self.app = app
         self.access_token = access_token
@@ -38,6 +38,36 @@ class FacebookRequest(object):
         self._params = params
 
     @property
+    def endpoint(self):
+        return self._endpoint
+
+    @endpoint.setter
+    def endpoint(self, value):
+        params = get_params_from_url(value)
+        if params.get('access_token'):
+            access_token = ''.join(params.get('access_token'))
+            if not self.access_token:
+                self.access_token = access_token
+            elif self.access_token != access_token:
+                raise FacebookSDKException(
+                    'Access token mismatch. The access token provided in the FacebookRequest '
+                    'and the one provided in the URL or POST params do not match.'
+                )
+
+        self._endpoint = remove_params_from_url(value, params_to_remove=['access_token', 'appsecret_proof'])
+
+    @property
+    def access_token(self):
+        return self._access_token
+
+    @access_token.setter
+    def access_token(self, value):
+        if value:
+            self._access_token = str(value)
+        else:
+            self._access_token = None
+
+    @property
     def params(self):
         """ The url params.
 
@@ -45,7 +75,7 @@ class FacebookRequest(object):
         """
         params = self._params.copy() if self.method != METHOD_POST else {}
         if self.access_token:
-            params.update(dict(access_token=str(self.access_token)))
+            params.update(dict(access_token=self.access_token))
 
         return params
 
@@ -66,7 +96,7 @@ class FacebookRequest(object):
 
         :rtype: str
         """
-        return force_slash_prefix(self.graph_version) + self.endpoint
+        return force_slash_prefix(self.graph_version) + force_slash_prefix(self.endpoint)
 
     @property
     def url_encode_body(self):
@@ -183,7 +213,7 @@ class FacebookBatchRequest(FacebookRequest):
             batch['name'] = request_name
 
         if request.access_token != self.access_token:
-            batch['access_token'] = str(request.access_token)
+            batch['access_token'] = request.access_token
 
         return batch
 

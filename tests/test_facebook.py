@@ -64,7 +64,7 @@ class TestFacebook(TestCase):
         self.assertIsInstance(response, FacebookResponse)
         self.assertEqual(response.request.method, 'GET')
         self.assertEqual(response.request.endpoint, 'some_endpoint')
-        self.assertEqual(str(response.request.access_token), 'foo_token')
+        self.assertEqual(response.request.access_token, 'foo_token')
         self.assertEqual(response.request.graph_version, 'v2.7')
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
@@ -82,7 +82,7 @@ class TestFacebook(TestCase):
 
         self.assertEqual(response.request.method, 'GET')
         self.assertEqual(response.request.endpoint, 'some_endpoint')
-        self.assertEqual(str(response.request.access_token), 'my_token')
+        self.assertEqual(response.request.access_token, 'my_token')
         self.assertEqual(response.request.graph_version, 'v2.6')
         self.assertDictEqual(response.request.params, {'access_token': 'my_token'})
 
@@ -105,7 +105,7 @@ class TestFacebook(TestCase):
         )
 
         self.assertEqual(response.request.method, 'POST')
-        self.assertEqual(str(response.request.access_token), 'foo_token')
+        self.assertEqual(response.request.access_token, 'foo_token')
         self.assertEqual(response.request.graph_version, 'v2.7')
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
@@ -126,7 +126,7 @@ class TestFacebook(TestCase):
         )
 
         self.assertEqual(response.request.method, 'POST')
-        self.assertEqual(str(response.request.access_token), 'my_token')
+        self.assertEqual(response.request.access_token, 'my_token')
         self.assertEqual(response.request.graph_version, 'v2.6')
         self.assertDictEqual(response.request.params, {'access_token': 'my_token'})
 
