@@ -17,7 +17,7 @@ def base_graph_url_endpoint(url_to_trim):
 def remove_params_from_url(url, params_to_remove):
     parsed = urlparse(url)
     qd = parse_qs(parsed.query, keep_blank_values=True)
-    filtered = dict((k, v) for k, v in qd.iteritems() if k not in params_to_remove)
+    filtered = dict((k, v) for k, v in qd.items() if k not in params_to_remove)
     newurl = urlunparse([
         parsed.scheme,
         parsed.netloc,
