@@ -7,11 +7,9 @@ import requests
 from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
 from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
-from facebook_sdk.utils import force_slash_prefix
 
 
 class FacebookClient(object):
-
     def _prepareRequest(self, request):
         """
 

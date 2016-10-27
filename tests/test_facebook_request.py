@@ -1,16 +1,15 @@
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
+from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
 from facebook_sdk.utils import force_slash_prefix
 from tests import TestCase
 
 
 class TestFacebookRequest(TestCase):
-    def setUp(self):
-        super(TestFacebookRequest, self).setUp()
-
     def test_get_request_has_access_token(self):
         access_token = 'fake_token'
         request = FacebookRequest(
+            endpoint='',
             access_token=access_token,
             method=METHOD_GET,
         )
@@ -20,6 +19,7 @@ class TestFacebookRequest(TestCase):
     def test_post_request_has_access_token(self):
         access_token = 'fake_token'
         request = FacebookRequest(
+            endpoint='',
             access_token=access_token,
             method=METHOD_POST,
         )
@@ -29,6 +29,7 @@ class TestFacebookRequest(TestCase):
     def test_post_params(self):
         expected_post_params = {'foo': 'bar'}
         request = FacebookRequest(
+            endpoint='',
             method=METHOD_POST,
             params=expected_post_params
         )
@@ -37,6 +38,7 @@ class TestFacebookRequest(TestCase):
 
     def test_encoded_body(self):
         request = FacebookRequest(
+            endpoint='',
             method=METHOD_POST,
             params={'foo': 'bar'}
         )
@@ -44,7 +46,7 @@ class TestFacebookRequest(TestCase):
         self.assertEqual(request.url_encode_body, 'foo=bar')
 
     def test_default_attributes(self):
-        request = FacebookRequest()
+        request = FacebookRequest(endpoint='')
         self.assertIsInstance(request.headers, dict)
         self.assertIsInstance(request.params, dict)
         self.assertEqual(request.graph_version, DEFAULT_GRAPH_VERSION)
@@ -53,14 +55,26 @@ class TestFacebookRequest(TestCase):
         request = FacebookRequest(endpoint='/foo')
         self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION) + '/foo')
 
+    def test_endpoint_with_access_token(self):
+        request = FacebookRequest(endpoint='/foo?access_token=foo_token')
+        self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION) + '/foo')
+        self.assertEqual(request.access_token, 'foo_token')
+
+    def test_endpoint_with_distinct_access_tokens(self):
+        self.assertRaises(
+            FacebookSDKException,
+            FacebookRequest,
+            endpoint='/foo?access_token=foo_token',
+            access_token='bar_token',
+        )
+
     def test_empty_endpoint_url(self):
         request = FacebookRequest(endpoint='')
-        self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION))
+        self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION) + '/')
 
 
 class TestFacebookBatchRequest(TestCase):
     def setUp(self):
-        super(TestFacebookBatchRequest, self).setUp()
         self.req1 = FacebookRequest(
             endpoint='123',
             method=METHOD_GET,
@@ -108,9 +122,9 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req2, self.req3]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "v2.5/123", "name": "0"}, '
-            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "v2.5/123", "name": "1"}, '
-            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "v2.5/123", "name": "2"}]'
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123", "name": "0"}, '
+            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "/v2.5/123", "name": "1"}, '
+            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.5/123", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))

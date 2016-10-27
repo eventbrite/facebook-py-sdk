@@ -1,13 +1,47 @@
+from copy import copy
+
+from facebook_sdk.constants import METHOD_GET
+from facebook_sdk.utils import base_graph_url_endpoint
+
 try:
     import simplejson as json
 except ImportError:
     import json
 
-from facebook_sdk.exceptions import FacebookResponseException
+from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
 from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 
 
-class FacebookResponse(object):
+class ResponsePaginationMixin(object):
+    def next_page_request(self):
+        """ Return a FacebookRequest for the next page of the current Response
+
+        :return: a FacebookRequest
+        """
+        return self._build_pagination_request('next')
+
+    def previous_page_request(self):
+        """ Return a FacebookRequest for the previous page of the current Response
+
+        :return: a FacebookRequest
+        """
+        return self._build_pagination_request('previous')
+
+    def _build_pagination_request(self, direction):
+        if self.request.method != METHOD_GET:
+            raise FacebookSDKException('You can only paginate on a GET request.', 720)
+
+        pagination_url = self.json_body.get('paging', {}).get(direction)
+
+        request = None
+        if pagination_url:
+            request = copy(self.request)
+            request.endpoint = base_graph_url_endpoint(pagination_url)
+
+        return request
+
+
+class FacebookResponse(ResponsePaginationMixin):
     """ A Facebook Response
 
     """
@@ -55,7 +89,6 @@ class FacebookResponse(object):
 
     def _build_exception(self):
         """
-
         :return:
         """
         self.exception = FacebookResponseException.create(response=self)

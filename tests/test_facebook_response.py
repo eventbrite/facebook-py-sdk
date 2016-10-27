@@ -1,7 +1,7 @@
 import json
 
 from facebook_sdk.constants import METHOD_GET, METHOD_POST
-from facebook_sdk.exceptions import FacebookResponseException
+from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
 from facebook_sdk.request import FacebookRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
 from tests import FakeFacebookRequest, FakeFacebookBatchRequest, TestCase
@@ -11,7 +11,7 @@ class TestFacebookResponse(TestCase):
     def test_parse_body(self):
         expected_body = {'success': True}
         response = FacebookResponse(
-            request=FakeFacebookRequest,
+            request=FakeFacebookRequest(),
             body=json.dumps(expected_body),
             http_status_code=200
         )
@@ -19,7 +19,7 @@ class TestFacebookResponse(TestCase):
 
     def test_raise_exception(self):
         response = FacebookResponse(
-            request=FakeFacebookRequest,
+            request=FakeFacebookRequest(),
             body=json.dumps({'error': {'foo': 'bar'}}),
             http_status_code=200
         )
@@ -31,11 +31,75 @@ class TestFacebookResponse(TestCase):
 
     def test_build_exception(self):
         response = FacebookResponse(
-            request=FakeFacebookRequest,
+            request=FakeFacebookRequest(),
             body=json.dumps({'error': {'foo': 'bar'}}),
             http_status_code=200
         )
         self.assertIsInstance(response.exception, FacebookResponseException)
+
+
+class TestFacebookResponsePagination(TestCase):
+    def setUp(self):
+        super(TestFacebookResponsePagination, self).setUp()
+        self.paginable_body = {
+            'data': [{
+                'images': [
+                    {
+                        'height': 960,
+                        'source': 'https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xtf1/t31.0-8/1290121r2_1173774305979756_75759041928559429558_o.jpg',
+                        'width': 1280
+                    },
+                    {
+                        'height': 720,
+                        'source': 'https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xfp1/v/t1.0-9/12495117_1173774305979756_4579041928559429558_n.jpg?oh=f4066e6b8bb9c6db1aea2e07d30f6bd8&oe=588D2B3D&__gda__=1485370477_c221b76e4a897ced0894126abc1553f5',
+                        'width': 960
+                    },
+                    {
+                        'height': 600,
+                        'source': 'https://fbcdn-photos-a-a.akamaihd.net/hphotos-ak-xtf1/t31.0-0/p600x600/12901212_1173774305979756_75790419428559429558_o.jpg',
+                        'width': 800
+                    },
+                ]
+            }],
+            'paging': {
+                'cursors': {
+                    'before': 'TVRFM016YzNORE13TlRrM09UYzFOam94TkRVNU5EUTRNVGczT2pNNU5EQTRPVFkwTURZAME56ZA3pOZAz09',
+                    'after': 'TVRBeU1EWTNOVFUyTmpVeE1Ea3hOREU2TVRRek16Y3dPREl4TVRvek9UUXdPRGsyTkRBMk5EYzRNelk9'
+                },
+                'next': 'https://graph.facebook.com/v2.7/me/photos?access_token=foo_token&pretty=0&fields=images&limit=25&after=TVRBeU1EWTNOVFUyTmpVeE1Ea3hOREU2TVRRek16Y3dPREl4TVRvek9UUXdPRGsyTkRBMk5EYzRNelk9',
+                'previous': 'https://graph.facebook.com/v2.7/me/photos?access_token=foo_token&pretty=0&fields=images&limit=25&before=TVRFM016YzNORE13TlRrM09UYzFOam94TkRVNU5EUTRNVGczT2pNNU5EQTRPVFkwTURZAME56ZA3pOZAz09',
+            }
+        }
+        self.response = FacebookResponse(
+            request=FacebookRequest(
+                endpoint='/me/photos',
+                method='GET',
+                params={'foo': 'bar'},
+                access_token='foo_token',
+            ),
+            body=json.dumps(self.paginable_body),
+            http_status_code=200
+        )
+
+    def test_next_page(self):
+        request = self.response.next_page_request()
+
+        self.assertEqual(sorted(request.endpoint), sorted('/me/photos?pretty=0&fields=images&limit=25&after=TVRBeU1EWTNOVFUyTmpVeE1Ea3hOREU2TVRRek16Y3dPREl4TVRvek9UUXdPRGsyTkRBMk5EYzRNelk9'))
+        self.assertNotEqual(self.response.request, request)
+
+    def test_previous_page(self):
+        request = self.response.previous_page_request()
+
+        self.assertEqual(sorted(request.endpoint), sorted('/me/photos?pretty=0&fields=images&limit=25&before=TVRFM016YzNORE13TlRrM09UYzFOam94TkRVNU5EUTRNVGczT2pNNU5EQTRPVFkwTURZAME56ZA3pOZAz09'))
+        self.assertNotEqual(self.response.request, request)
+
+    def test_http_allowed_method_for_pagination(self):
+        self.response.request.method = 'POST'
+
+        self.assertRaises(
+            FacebookSDKException,
+            self.response.next_page_request,
+        )
 
 
 class TestFacebookBatchResponse(TestCase):
