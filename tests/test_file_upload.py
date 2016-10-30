@@ -13,8 +13,7 @@ class TestFacebook(TestCase):
 
     def test_file_is_open(self):
         facebook_file = FacebookFile(path=self.file_path)
-
-        self.assertIsInstance(facebook_file.stream, file)
+        
         self.assertFalse(facebook_file.stream.closed)
 
     def test_file_mime_type(self):
