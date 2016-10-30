@@ -140,7 +140,9 @@ class FacebookRequest(object):
         for k, v in value.items():
             if isinstance(v, FacebookFile):
                 self.files[k] = v
-                value.pop(k)
+
+        for k in self.files.keys():
+            value.pop(k)
 
     def contain_files(self):
         return bool(self.files)
