@@ -6,7 +6,7 @@ history = open('CHANGELOG.md').read()
 
 setup(
     name='Facebook Python SDK',
-    version=__version__,
+    version=__VERSION__,
     description='Facebook Python SDK',
     long_description=readme + '\n\n' + history,
     license="MIT",
