@@ -88,7 +88,7 @@ class TestFacebookRequest(TestCase):
             }
         )
 
-        self.assertNotIn('source', request._params)
+        self.assertFalse('source' not in request._params)
         self.assertIn('source', request.files)
 
     def test_contains_file(self):
