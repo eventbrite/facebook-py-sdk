@@ -1,5 +1,8 @@
+import os
+
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.exceptions import FacebookSDKException
+from facebook_sdk.file_upload import FacebookFile
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
 from facebook_sdk.utils import force_slash_prefix
 from tests import TestCase
@@ -72,8 +75,59 @@ class TestFacebookRequest(TestCase):
         request = FacebookRequest(endpoint='')
         self.assertEqual(request.url, force_slash_prefix(DEFAULT_GRAPH_VERSION) + '/')
 
+    def test_extract_files_from_params(self):
+        request = FacebookRequest(
+            endpoint='',
+            params={
+                'message': 'Awesome Photo',
+                'source': FacebookFile(
+                    path='{base_path}/foo.txt'.format(
+                        base_path=os.path.dirname(os.path.abspath(__file__))
+                    ),
+                )
+            }
+        )
+
+        self.assertFalse('source' in request._params)
+        self.assertIn('source', request.files)
+
+    def test_contains_file(self):
+        request_with_file = FacebookRequest(
+            endpoint='',
+            params={
+                'message': 'Awesome Photo',
+                'source': FacebookFile(
+                    path='{base_path}/foo.txt'.format(
+                        base_path=os.path.dirname(os.path.abspath(__file__))
+                    ),
+                )
+            }
+        )
+        request= FacebookRequest(endpoint='')
+
+        self.assertTrue(request_with_file.contain_files())
+        self.assertFalse(request.contain_files())
+
+    def test_files_to_upload(self):
+        facebook_file = FacebookFile(
+            path='{base_path}/foo.txt'.format(
+                base_path=os.path.dirname(os.path.abspath(__file__))
+            ),
+        )
+        request = FacebookRequest(
+            endpoint='',
+            params={
+                'message': 'Awesome Photo',
+                'source': facebook_file
+            }
+        )
+        files_to_upload = request.files_to_upload()[0]
+        expected = ('source', ('foo.txt', facebook_file.stream, 'text/plain'))
+        self.assertEqual(files_to_upload, expected)
+
 
 class TestFacebookBatchRequest(TestCase):
+
     def setUp(self):
         self.req1 = FacebookRequest(
             endpoint='123',
@@ -135,3 +189,25 @@ class TestFacebookBatchRequest(TestCase):
 
     def test_requests_to_json(self):
         pass
+
+    def test_batch_request_with_files(self):
+        request = FacebookRequest(
+            endpoint='/foo',
+            method='POST',
+            params={
+                'message': 'foo',
+                'source': FacebookFile(
+                    path='{base_path}/foo.txt'.format(
+                        base_path=os.path.dirname(os.path.abspath(__file__))
+                    ),
+                )
+            }
+        )
+        batch_request = FacebookBatchRequest(
+            access_token='fake_token',
+            requests=[request],
+        )
+        expected_batch = '[{"body": "message=foo", "attached_files": "%(attached_files)s", "name": "0", "relative_url": "/v2.5/foo", "headers": {}, "method": "POST"}]' % dict(attached_files=batch_request.requests[0].get('attached_files'))
+        batch_request.prepare_batch_request()
+
+        self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))

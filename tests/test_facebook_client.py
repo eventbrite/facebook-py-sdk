@@ -25,13 +25,13 @@ class TestFacebookClient(TestCase):
         self.client = FakeFacebookClient(fake_response=self.fake_response)
 
     def test_prepare_request(self):
-        (method, url, params, data, headers) = self.client._prepareRequest(request=self.request)
+        request_params = self.client._prepareRequest(request=self.request)
 
-        self.assertEqual(method, self.request.method)
-        self.assertEqual(url, '%s%s' % (BASE_GRAPH_URL, self.request.url))
-        self.assertEqual(params, self.request.params)
-        self.assertIn('Content-Type', headers)
-        self.assertEqual(headers['Content-Type'], 'application/x-www-form-urlencoded')
+        self.assertEqual(request_params.get('method'), self.request.method)
+        self.assertEqual(request_params.get('url'), '%s%s' % (BASE_GRAPH_URL, self.request.url))
+        self.assertEqual(request_params.get('params'), self.request.params)
+        self.assertIn('Content-Type', request_params.get('headers'))
+        self.assertEqual(request_params.get('headers').get('Content-Type'), 'application/x-www-form-urlencoded')
 
     def test_send_request(self):
         response = self.client.send_request(self.request)
