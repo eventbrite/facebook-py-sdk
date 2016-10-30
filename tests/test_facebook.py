@@ -1,7 +1,10 @@
+import os
+
 from facebook_sdk.authentication import AccessToken, OAuth2Client
 from facebook_sdk.client import FacebookClient
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook import FacebookApp, Facebook
+from facebook_sdk.file_upload import FacebookFile
 from facebook_sdk.response import FacebookResponse
 from tests import TestCase, FakeFacebookClient, FakeResponse
 
@@ -129,6 +132,49 @@ class TestFacebook(TestCase):
         self.assertEqual(response.request.access_token, 'my_token')
         self.assertEqual(response.request.graph_version, 'v2.6')
         self.assertDictEqual(response.request.params, {'access_token': 'my_token'})
+
+    def test_get_facebook_get_method(self):
+        self.facebook.client = FakeFacebookClient(
+            fake_response=FakeResponse(
+                status_code=200,
+                content='',
+            )
+        )
+        response = self.facebook.get(
+            endpoint='/test',
+        )
+        self.assertEqual(response.request.method, 'GET')
+
+    def test_post_facebook_get_method(self):
+        self.facebook.client = FakeFacebookClient(
+            fake_response=FakeResponse(
+                status_code=200,
+                content='',
+            )
+        )
+        response = self.facebook.post(
+            endpoint='/test',
+        )
+        self.assertEqual(response.request.method, 'POST')
+
+    def test_delete_facebook_get_method(self):
+        self.facebook.client = FakeFacebookClient(
+            fake_response=FakeResponse(
+                status_code=200,
+                content='',
+            )
+        )
+        response = self.facebook.delete(
+            endpoint='/test',
+        )
+        self.assertEqual(response.request.method, 'DELETE')
+
+    def test_filet_to_upload(self):
+        facebook_file = self.facebook.file_to_upload(path='{base_path}/foo.txt'.format(
+            base_path=os.path.dirname(os.path.abspath(__file__))
+        ))
+
+        self.assertIsInstance(facebook_file, FacebookFile)
 
 
 class TestFacebookApp(TestCase):

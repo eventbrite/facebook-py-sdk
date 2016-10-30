@@ -16,18 +16,28 @@ class FacebookClient(object):
         :type request: FacebookRequest
         :rtype: tuple
         """
-        request.add_headers([
-            {'Content-Type': 'application/x-www-form-urlencoded'}
-        ])
-
         url = BASE_GRAPH_URL + request.url
 
-        return (
-            request.method,
-            url,
-            request.params,
-            request.post_params,
-            request.headers,
+        data = None
+        if request.contain_files():
+            if request.post_params:
+                # Content-Type form-data will be provided by requests lib
+                data = request.post_params
+        else:
+            request.add_headers([
+                {'Content-Type': 'application/x-www-form-urlencoded'}
+            ])
+            if request.post_params:
+                data = urlencode(request.post_params)
+
+        return dict(
+            url=url,
+            method=request.method,
+            params=request.params,
+            data=data,
+            headers=request.headers,
+            files=request.files_to_upload(),
+            timeout=DEFAULT_REQUEST_TIMEOUT,
         )
 
     def send_request(self, request):
@@ -35,15 +45,10 @@ class FacebookClient(object):
         :type request: FacebookRequest
         :rtype: FacebookResponse
         """
-        (method, url, params, data, headers) = self._prepareRequest(request)
+        request_params = self._prepareRequest(request)
 
         res = self.send(
-            data=data,
-            headers=headers,
-            method=method,
-            params=params,
-            url=url,
-            timeout=DEFAULT_REQUEST_TIMEOUT
+            **request_params
         )
 
         response = FacebookResponse(
@@ -57,17 +62,17 @@ class FacebookClient(object):
 
         return response
 
-    def send(self, data, headers, method, params, url, timeout):
+    def send(self, data, headers, method, params, url, files, timeout):
         # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
-        if data:
-            data = urlencode(data)
+
         res = requests.request(
             method=method,
             url=url,
             headers=headers,
             params=params,
             data=data,
-            timeout=timeout
+            files=files,
+            timeout=timeout,
         )
         return res
 

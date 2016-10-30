@@ -2,8 +2,9 @@ import os
 
 from facebook_sdk.authentication import OAuth2Client, AccessToken
 from facebook_sdk.client import FacebookClient
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION
+from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.exceptions import FacebookSDKException
+from facebook_sdk.file_upload import FacebookFile
 from facebook_sdk.request import (
     FacebookBatchRequest,
     FacebookRequest,
@@ -133,3 +134,36 @@ class Facebook(object):
             self.default_access_token = access_token
         else:
             raise ValueError('The default access token must be of type "str" or AccessToken')
+
+    def file_to_upload(self, path):
+        return FacebookFile(path=path)
+
+    def post(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+        return self.send_request(
+            method=METHOD_POST,
+            access_token=access_token,
+            endpoint=endpoint,
+            params=params,
+            headers=headers,
+            graph_version=graph_version,
+        )
+
+    def get(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+        return self.send_request(
+            method=METHOD_GET,
+            access_token=access_token,
+            endpoint=endpoint,
+            params=params,
+            headers=headers,
+            graph_version=graph_version,
+        )
+
+    def delete(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+        return self.send_request(
+            method=METHOD_DELETE,
+            access_token=access_token,
+            endpoint=endpoint,
+            params=params,
+            headers=headers,
+            graph_version=graph_version,
+        )

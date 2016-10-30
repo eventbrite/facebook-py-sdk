@@ -1,3 +1,7 @@
+import uuid
+
+from facebook_sdk.file_upload import FacebookFile
+
 try:
     import simplejson as json
 except ImportError:
@@ -35,7 +39,7 @@ class FacebookRequest(object):
         self.endpoint = endpoint
         self.graph_version = graph_version
         self.headers = headers
-        self._params = params
+        self.params = params
 
     @property
     def endpoint(self):
@@ -79,6 +83,21 @@ class FacebookRequest(object):
 
         return params
 
+    @params.setter
+    def params(self, value):
+        """
+        :return:
+        """
+        if 'access_token' in value:
+            self.access_token = value.get('access_token')
+
+        value.pop('access_token', None)
+        value.pop('appsecret_proof', None)
+
+        self._extract_files_from_params(value)
+        self._params = getattr(self, '_params', {})
+        self._params.update(value)
+
     @property
     def post_params(self):
         """ The post params.
@@ -115,6 +134,19 @@ class FacebookRequest(object):
         """
         for header in headers:
             self.headers.update(header)
+
+    def _extract_files_from_params(self, value):
+        self.files = {}
+        for k, v in value.items():
+            if isinstance(v, FacebookFile):
+                self.files[k] = v
+                value.pop(k)
+
+    def contain_files(self):
+        return bool(self.files)
+
+    def files_to_upload(self):
+        return [(name, (file.name, file.stream, file.mime_type)) for name, file in self.files.items()]
 
 
 class FacebookBatchRequest(FacebookRequest):
@@ -165,10 +197,16 @@ class FacebookBatchRequest(FacebookRequest):
 
         self._add_access_token(request)
 
-        self.requests.append({
+        request_to_add = {
             'name': str(name),
             'request': request,
-        })
+        }
+
+        attached_files = self.extract_file_attachments(request)
+        if attached_files:
+            request_to_add['attached_files'] = attached_files
+
+        self.requests.append(request_to_add)
 
     def _add_access_token(self, request):
         """ Set the batch request access token to the request if wasn't provided.
@@ -191,7 +229,7 @@ class FacebookBatchRequest(FacebookRequest):
         }
         self._params.update(params)
 
-    def request_entity_to_batch_array(self, request, request_name):
+    def request_entity_to_batch_array(self, request, request_name, attached_files):
         """ Convert a FacebookRequest entity to a request batch representation.
 
         :param request: a FacebookRequest
@@ -215,21 +253,24 @@ class FacebookBatchRequest(FacebookRequest):
         if request.access_token != self.access_token:
             batch['access_token'] = request.access_token
 
+        if attached_files:
+            batch['attached_files'] = attached_files
+
         return batch
 
     def requests_to_json(self):
         """ Convert the requests to json."""
         json_requests = [
             self.request_entity_to_batch_array(
-                request=request['request'],
-                request_name=request['name']
+                request_name=request.get('name'),
+                request=request.get('request'),
+                attached_files=request.get('attached_files')
             ) for request in self.requests
-            ]
+        ]
 
         return json.dumps(json_requests)
 
     def validate_batch_request_count(self):
-
         """ Validate the request count before sending them as a batch.
 
             :raise FacebookSDKException
@@ -240,6 +281,21 @@ class FacebookBatchRequest(FacebookRequest):
             raise FacebookSDKException('Empty batch requests')
         if requests_count > MAX_REQUEST_BY_BATCH:
             raise FacebookSDKException('The limit of requests in batch is %d' % MAX_REQUEST_BY_BATCH)
+
+    def extract_file_attachments(self, request):
+        """ Remove files from the request and return file names removed
+        :param request:
+        :return:
+        """
+        file_names = []
+        for file in request.files.values():
+            file_name = uuid.uuid4().hex
+            self.files[file_name] = file
+            file_names.append(file_name)
+
+        request.files.clear()
+
+        return ','.join(file_names)
 
     def __iter__(self):
         return iter(self.requests)
