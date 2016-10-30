@@ -5,14 +5,14 @@ readme = open('README.rst').read()
 history = open('CHANGELOG.md').read()
 
 setup(
-    name='Facebook Python SDK',
+    name='facebook-python-sdk',
     version=__VERSION__,
     description='Facebook Python SDK',
     long_description=readme + '\n\n' + history,
     license="MIT",
     author='Zeta Hernandez',
     author_email='zetahernandez@gmail.com',
-    url='http://github.com/zetahernandez/facebook-sdk',
+    url='http://github.com/zetahernandez/facebook-python-sdk',
     packages=['facebook_sdk'],
     install_requires=['requests >=0.8', 'six >= 1.6'],
     classifiers=[
