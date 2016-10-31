@@ -1,4 +1,8 @@
 .idea/
+.pypirc
+.DS_Store
 *.pyc
 build/
 dist/
+*.egg
+*.egg-info
