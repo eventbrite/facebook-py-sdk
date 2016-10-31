@@ -23,7 +23,8 @@ To install Facebook SDK Python, simply:
 Usage
 =====
 
-* Retrieve User Profile
+Retrieve User Profile
+---------------------
 
 .. code-block:: python
     from facebook_sdk.exceptions import FacebookResponseException
@@ -44,7 +45,8 @@ Usage
     else:
         print 'User name: %(name)s' % {'name': response.json_body.get('id')}
 
-* Batch Upload Files
+Batch Upload Files
+------------------
 
 .. code-block:: python
     from facebook_sdk.exceptions import FacebookResponseException
