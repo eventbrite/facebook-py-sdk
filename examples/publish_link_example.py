@@ -19,4 +19,4 @@ try:
 except FacebookResponseException as e:
     print e.message
 else:
-    print 'Posted with id: %(id)s' % response.json_body.get('id')
+    print 'Posted with id: %(id)s' % {'id': response.json_body.get('id')}

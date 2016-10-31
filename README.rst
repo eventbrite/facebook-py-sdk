@@ -6,11 +6,94 @@ Facebook SDK Python
 .. image:: https://coveralls.io/repos/github/zetahernandez/facebook-python-sdk/badge.svg
     :target: https://coveralls.io/github/zetahernandez/facebook-python-sdk
 
+Facebook SDK Python is a python based implementation of `Facebook PHP SDK`_
+
+.. contents:: Table of Contents
+
+
 Installation
-------------
+============
 
 To install Facebook SDK Python, simply:
 
 .. code-block:: bash
 
     $ pip install facebook-sdk-python
+
+Usage
+=====
+
+* Retrieve User Profile
+
+.. code-block:: python
+    from facebook_sdk.exceptions import FacebookResponseException
+    from facebook_sdk.facebook import Facebook
+
+    facebook = Facebook(
+        app_id='{app_id}',
+        app_secret='{app_secret}',
+        default_graph_version='v2.5',
+    )
+
+    facebook.set_default_access_token(access_token='{access_token}')
+
+    try:
+        response = facebook.get(endpoint='/me?fields=id,name')
+    except FacebookResponseException as e:
+        print e.message
+    else:
+        print 'User name: %(name)s' % {'name': response.json_body.get('id')}
+
+* Batch Upload Files
+
+.. code-block:: python
+    from facebook_sdk.exceptions import FacebookResponseException
+    from facebook_sdk.facebook import Facebook
+
+    facebook = Facebook(
+        app_id='{app_id}',
+        app_secret='{app_secret}',
+    )
+
+    facebook.set_default_access_token(access_token='{access_token}')
+
+    batch = {
+        'photo-one': facebook.request(
+            endpoint='/me/photos',
+            params={
+                'message': 'Foo photo.',
+                'source': facebook.file_to_upload('path/to/foo.jpg'),
+            },
+        ),
+        'photo-two': facebook.request(
+            endpoint='/me/photos',
+            params={
+                'message': 'Bar photo.',
+                'source': facebook.file_to_upload('path/to/bar.jpg'),
+            },
+        ),
+        'photo-three': facebook.request(
+            endpoint='/me/photos',
+            params={
+                'message': 'Other photo.',
+                'source': facebook.file_to_upload('path/to/other.jpg'),
+            },
+        )
+    }
+
+    try:
+        responses = facebook.send_batch_request(requests=batch)
+    except FacebookResponseException as e:
+        print e.message
+
+
+Dependencies
+============
+
+Dependencies that to use the application:
+
+* requests_
+
+.. _requests: http://docs.python-requests.org/en/latest/
+.. _Facebook PHP SDK: https://developers.facebook.com/docs/reference/php/
+
