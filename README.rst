@@ -27,6 +27,7 @@ Retrieve User Profile
 ---------------------
 
 .. code-block:: python
+
     from facebook_sdk.exceptions import FacebookResponseException
     from facebook_sdk.facebook import Facebook
 
@@ -45,10 +46,12 @@ Retrieve User Profile
     else:
         print 'User name: %(name)s' % {'name': response.json_body.get('id')}
 
+
 Batch Upload Files
 ------------------
 
 .. code-block:: python
+
     from facebook_sdk.exceptions import FacebookResponseException
     from facebook_sdk.facebook import Facebook
 
