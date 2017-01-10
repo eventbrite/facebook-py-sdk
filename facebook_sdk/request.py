@@ -118,6 +118,20 @@ class FacebookRequest(object):
         return force_slash_prefix(self.graph_version) + force_slash_prefix(self.endpoint)
 
     @property
+    def batch_url(self):
+        """ The relative url to the graph api.
+
+        :rtype: str
+        """
+        params = self.params
+        url = self.url
+
+        if self.method != METHOD_POST and params:
+            return '{url}?{encoded_params}'.format(url=url, encoded_params=urlencode(self.params))
+
+        return url
+
+    @property
     def url_encode_body(self):
         """ Convert the post params to a urlencoded str
 
@@ -242,7 +256,7 @@ class FacebookBatchRequest(FacebookRequest):
         batch = {
             'headers': request.headers,
             'method': request.method,
-            'relative_url': request.url,
+            'relative_url': request.batch_url,
         }
 
         encoded_body = request.url_encode_body

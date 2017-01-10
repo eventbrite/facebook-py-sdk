@@ -132,17 +132,23 @@ class TestFacebookBatchRequest(TestCase):
         self.req1 = FacebookRequest(
             endpoint='123',
             method=METHOD_GET,
-            headers={'Conent-Type': 'application/json'}
+            headers={'Conent-Type': 'application/json'},
         )
         self.req2 = FacebookRequest(
             endpoint='123',
             method=METHOD_POST,
-            params={'foo': 'bar'}
+            params={'foo': 'bar'},
         )
         self.req3 = FacebookRequest(
             access_token='other_token',
             endpoint='123',
-            method=METHOD_DELETE
+            method=METHOD_DELETE,
+        )
+        self.req4 = FacebookRequest(
+            endpoint='123',
+            method=METHOD_GET,
+            params={'fields': 'name, description'},
+            headers={'Conent-Type': 'application/json'},
         )
 
     def test_add_a_list_of_requests(self):
@@ -176,13 +182,28 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req2, self.req3]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123", "name": "0"}, '
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
             '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "/v2.5/123", "name": "1"}, '
-            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.5/123", "name": "2"}]'
+            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.5/123?access_token=other_token", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))
         self.assertTrue(batch_request.post_params['include_headers'])
+
+    def test_prepare_batch_request_with_params(self):
+        batch_request = FacebookBatchRequest(
+            access_token='fake_token',
+            requests=[self.req1, self.req4]
+        )
+        expected_batch = (
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
+            '{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token&fields=name%2C+description", "name": "1"}]'
+        )
+
+        batch_request.prepare_batch_request()
+        self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))
+        self.assertTrue(batch_request.post_params['include_headers'])
+
 
     def test_request_entity_to_batch_array(self):
         pass
