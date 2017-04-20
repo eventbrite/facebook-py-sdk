@@ -119,6 +119,7 @@ class TestFacebook(TestCase):
                 content='[{"code":"200","body":"Foo"}]',
             )
         )
+
         batches = [self.facebook.request(
             method='GET',
             endpoint='some_endpoint',
