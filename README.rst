@@ -42,9 +42,9 @@ Retrieve User Profile
     try:
         response = facebook.get(endpoint='/me?fields=id,name')
     except FacebookResponseException as e:
-        print e.message
+        print(e.message)
     else:
-        print 'User name: %(name)s' % {'name': response.json_body.get('id')}
+        print('User name: %(name)s' % {'name': response.json_body.get('id')})
 
 
 Batch Upload Files
@@ -89,7 +89,7 @@ Batch Upload Files
     try:
         responses = facebook.send_batch_request(requests=batch)
     except FacebookResponseException as e:
-        print e.message
+        print(e.message)
 
 
 Dependencies
