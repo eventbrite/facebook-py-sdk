@@ -169,7 +169,7 @@ class TestFacebook(TestCase):
         )
         self.assertEqual(response.request.method, 'DELETE')
 
-    def test_filet_to_upload(self):
+    def test_file_to_upload(self):
         facebook_file = self.facebook.file_to_upload(path='{base_path}/foo.txt'.format(
             base_path=os.path.dirname(os.path.abspath(__file__))
         ))
