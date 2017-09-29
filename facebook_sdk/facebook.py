@@ -4,7 +4,7 @@ from facebook_sdk.authentication import OAuth2Client, AccessToken
 from facebook_sdk.client import FacebookClient
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.exceptions import FacebookSDKException
-from facebook_sdk.file_upload import FacebookFile
+from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.request import (
     FacebookBatchRequest,
     FacebookRequest,

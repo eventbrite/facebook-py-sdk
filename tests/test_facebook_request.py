@@ -2,7 +2,7 @@ import os
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.exceptions import FacebookSDKException
-from facebook_sdk.file_upload import FacebookFile
+from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
 from facebook_sdk.utils import force_slash_prefix
 from tests import TestCase
@@ -122,7 +122,7 @@ class TestFacebookRequest(TestCase):
             }
         )
         files_to_upload = request.files_to_upload()[0]
-        expected = ('source', ('foo.txt', facebook_file.stream, 'text/plain'))
+        expected = ('source', ('foo.txt', facebook_file, 'text/plain'))
         self.assertEqual(files_to_upload, expected)
 
 

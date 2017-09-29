@@ -4,7 +4,7 @@ from facebook_sdk.authentication import AccessToken, OAuth2Client
 from facebook_sdk.client import FacebookClient
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook import FacebookApp, Facebook
-from facebook_sdk.file_upload import FacebookFile
+from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.response import FacebookResponse
 from tests import TestCase, FakeFacebookClient, FakeResponse
 
