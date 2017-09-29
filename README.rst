@@ -102,3 +102,16 @@ Dependencies that to use the application:
 .. _requests: http://docs.python-requests.org/en/latest/
 .. _Facebook PHP SDK: https://developers.facebook.com/docs/reference/php/
 
+Contributing
+============
+
+Please use github model by forking the repository and making Pull Requests.
+
+Running tests
+-------------
+
+.. code-block:: bash
+
+ ➜  facebook-python-sdk $ pip install nose2
+ ➜  facebook-python-sdk $ nosetests
+

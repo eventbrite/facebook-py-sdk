@@ -5,7 +5,6 @@ except ImportError:
 import requests
 
 from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
-from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
 
 
@@ -63,9 +62,10 @@ class FacebookClient(object):
         return response
 
     def send(self, data, headers, method, params, url, files, timeout):
-        # TODO: Refactor this to support multiple client managers like requests, curl, urllib, etc...
+        # TODO: Refactor this to support multiple client managers
+        # like requests, curl, urllib, etc...
 
-        res = requests.request(
+        response = requests.request(
             method=method,
             url=url,
             headers=headers,
@@ -74,7 +74,7 @@ class FacebookClient(object):
             files=files,
             timeout=timeout,
         )
-        return res
+        return response
 
     def send_batch_request(self, batch_request):
         """

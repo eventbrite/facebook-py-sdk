@@ -25,10 +25,6 @@ class FacebookApp(object):
         self.secret = app_secret
 
     def access_token(self):
-        """
-
-        :return:
-        """
         from facebook_sdk.authentication import AccessToken
         return AccessToken(
             access_token='{id}|{secret}'.format(
@@ -103,11 +99,11 @@ class Facebook(object):
             headers=headers,
             graph_version=graph_version,
         )
-        response = self.send_fb_request(request=request)
+        response = self.send_facebook_request(request=request)
 
         return response
 
-    def send_fb_request(self, request):
+    def send_facebook_request(self, request):
         """
         :type request: FacebookRequest
         """

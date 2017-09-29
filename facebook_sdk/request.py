@@ -85,9 +85,6 @@ class FacebookRequest(object):
 
     @params.setter
     def params(self, value):
-        """
-        :return:
-        """
         if 'access_token' in value:
             self.access_token = value.get('access_token')
 
@@ -192,7 +189,7 @@ class FacebookBatchRequest(FacebookRequest):
             self.add(request=requests)
 
     def add(self, request, name=None):
-        """ Append a request or a set of request to the baths.
+        """ Append a request or a set of requests to the batches.
 
         :param request: an instance, list or dict of FacebookRequest
         :param name: the name of the request. keep it as None if you provide a set of requests
@@ -225,7 +222,7 @@ class FacebookBatchRequest(FacebookRequest):
         self.requests.append(request_to_add)
 
     def _add_access_token(self, request):
-        """ Set the batch request access token to the request if wasn't provided.
+        """ Set the batch request access token to the request if it wasn't provided.
 
         :type request: FacebookRequest
         """
@@ -280,7 +277,7 @@ class FacebookBatchRequest(FacebookRequest):
             self.request_entity_to_batch_array(
                 request_name=request.get('name'),
                 request=request.get('request'),
-                attached_files=request.get('attached_files')
+                attached_files=request.get('attached_files'),
             ) for request in self.requests
         ]
 
@@ -304,9 +301,9 @@ class FacebookBatchRequest(FacebookRequest):
         :return:
         """
         file_names = []
-        for file in request.files.values():
+        for _file in request.files.values():
             file_name = uuid.uuid4().hex
-            self.files[file_name] = file
+            self.files[file_name] = _file
             file_names.append(file_name)
 
         request.files.clear()
