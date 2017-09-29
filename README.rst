@@ -1,10 +1,10 @@
 Facebook SDK Python
 ===================
 
-.. image:: https://travis-ci.org/zetahernandez/facebook-python-sdk.svg?branch=master
-    :target: https://travis-ci.org/zetahernandez/facebook-python-sdk
-.. image:: https://coveralls.io/repos/github/zetahernandez/facebook-python-sdk/badge.svg
-    :target: https://coveralls.io/github/zetahernandez/facebook-python-sdk
+.. image:: https://travis-ci.org/zetahernandez/facebook-py-sdk.svg?branch=master
+    :target: https://travis-ci.org/zetahernandez/facebook-py-sdk
+.. image:: https://coveralls.io/repos/github/zetahernandez/facebook-py-sdk/badge.svg
+    :target: https://coveralls.io/github/zetahernandez/facebook-py-sdk
 
 Facebook SDK Python is a python based implementation of `Facebook PHP SDK`_
 
