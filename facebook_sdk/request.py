@@ -1,6 +1,6 @@
 import uuid
 
-from facebook_sdk.file_upload import FacebookFile
+from facebook_sdk.facebook_file import FacebookFile
 
 try:
     import simplejson as json
@@ -162,7 +162,7 @@ class FacebookRequest(object):
         return bool(self.files)
 
     def files_to_upload(self):
-        return [(name, (file.name, file.stream, file.mime_type)) for name, file in self.files.items()]
+        return [(name, (_file.name, _file, _file.mime_type)) for name, _file in self.files.items()]
 
 
 class FacebookBatchRequest(FacebookRequest):
