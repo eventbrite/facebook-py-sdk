@@ -18,6 +18,7 @@ class TestFacebook(TestCase):
             app_secret='secret',
             default_access_token='my_token',
             default_graph_version='v2.6',
+            default_request_timeout=10,
         )
 
     def test_initialize(self):
@@ -29,6 +30,7 @@ class TestFacebook(TestCase):
         self.assertEqual(self.facebook.app.secret, 'secret')
         self.assertEqual(self.facebook.default_graph_version, 'v2.6')
         self.assertEqual(str(self.facebook.default_access_token), 'my_token')
+        self.assertEqual(self.facebook.client.timeout, 10)
 
     def test_initialize_required_app_id_config(self):
         with self.assertRaises(FacebookSDKException):
