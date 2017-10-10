@@ -1,8 +1,10 @@
+from unittest import TestCase
+
 from facebook_sdk.constants import BASE_GRAPH_URL
 from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
 from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
-from tests import TestCase, FakeFacebookClient, FakeResponse
+from tests import FakeFacebookClient, FakeResponse
 
 
 class TestFacebookClient(TestCase):
@@ -43,11 +45,8 @@ class TestFacebookClient(TestCase):
                 status_code=400,
                 content='{"error": {"code": 100}}'),
         )
-        self.assertRaises(
-            FacebookResponseException,
-            self.client.send_request,
-            self.request,
-        )
+        with self.assertRaises(FacebookResponseException):
+            self.client.send_request(self.request)
 
     def test_send_batch_request(self):
         self.client = FakeFacebookClient(
@@ -59,21 +58,19 @@ class TestFacebookClient(TestCase):
         self.assertIsInstance(response, FacebookBatchResponse)
 
     def test_send_empty_batch_request(self):
-        self.assertRaises(
-            FacebookSDKException,
-            self.client.send_batch_request,
-            batch_request=FacebookBatchRequest(
-                access_token='fake_token',
-            ),
-        )
+        with self.assertRaises(FacebookSDKException):
+            self.client.send_batch_request(
+                batch_request=FacebookBatchRequest(
+                    access_token='fake_token',
+                ),
+            )
 
     def test_send_over_limit_batch_request(self):
         requests = [self.request] * 51
-        self.assertRaises(
-            FacebookSDKException,
-            self.client.send_batch_request,
-            batch_request=FacebookBatchRequest(
-                access_token='fake_token',
-                requests=requests,
-            ),
-        )
+        with self.assertRaises(FacebookSDKException):
+            self.client.send_batch_request(
+                batch_request=FacebookBatchRequest(
+                    access_token='fake_token',
+                    requests=requests,
+                ),
+            )

@@ -1,8 +1,8 @@
 import os
+from unittest import TestCase
 
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook_file import FacebookFile
-from tests import TestCase
 
 
 class TestFacebookFile(TestCase):
@@ -24,8 +24,7 @@ class TestFacebookFile(TestCase):
         self.assertTrue(self.facebook_file.name, 'foo.txt')
 
     def test_file_does_not_exist(self):
-        self.assertRaises(
-            FacebookSDKException,
-            FacebookFile,
-            path='does_not_exist.path',
-        )
+        with self.assertRaises(FacebookSDKException):
+            FacebookFile(
+                path='does_not_exist.path',
+            )

@@ -1,4 +1,5 @@
 import os
+from unittest import TestCase
 
 from facebook_sdk.authentication import AccessToken, OAuth2Client
 from facebook_sdk.client import FacebookClient
@@ -6,7 +7,7 @@ from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook import FacebookApp, Facebook
 from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.response import FacebookResponse
-from tests import TestCase, FakeFacebookClient, FakeResponse
+from tests import FakeFacebookClient, FakeResponse
 
 
 class TestFacebook(TestCase):
@@ -30,26 +31,22 @@ class TestFacebook(TestCase):
         self.assertEqual(str(self.facebook.default_access_token), 'my_token')
 
     def test_initialize_required_app_id_config(self):
-        self.assertRaises(
-            FacebookSDKException,
-            Facebook,
-        )
+        with self.assertRaises(FacebookSDKException):
+            Facebook()
 
     def test_initialize_required_app_secret_config(self):
-        self.assertRaises(
-            FacebookSDKException,
-            Facebook,
-            app_id='123',
-        )
+        with self.assertRaises(FacebookSDKException):
+            Facebook(
+                app_id='123',
+            )
 
     def test_initialize_invalid_access_token(self):
-        self.assertRaises(
-            ValueError,
-            Facebook,
-            app_id='123',
-            app_secret='123',
-            default_access_token=12345,  # token int not supported
-        )
+        with self.assertRaises(ValueError):
+            Facebook(
+                app_id='123',
+                app_secret='123',
+                default_access_token=12345,
+            )
 
     def test_send_request(self):
         self.facebook.client = FakeFacebookClient(
