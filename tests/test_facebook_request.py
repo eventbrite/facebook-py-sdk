@@ -1,11 +1,11 @@
 import os
+from unittest import TestCase
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
 from facebook_sdk.utils import force_slash_prefix
-from tests import TestCase
 
 
 class TestFacebookRequest(TestCase):
@@ -64,12 +64,11 @@ class TestFacebookRequest(TestCase):
         self.assertEqual(request.access_token, 'foo_token')
 
     def test_endpoint_with_distinct_access_tokens(self):
-        self.assertRaises(
-            FacebookSDKException,
-            FacebookRequest,
-            endpoint='/foo?access_token=foo_token',
-            access_token='bar_token',
-        )
+        with self.assertRaises(FacebookSDKException):
+            FacebookRequest(
+                endpoint='/foo?access_token=foo_token',
+                access_token='bar_token',
+            )
 
     def test_empty_endpoint_url(self):
         request = FacebookRequest(endpoint='')

@@ -1,10 +1,11 @@
 import json
+from unittest import TestCase
 
 from facebook_sdk.constants import METHOD_GET, METHOD_POST
 from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
 from facebook_sdk.request import FacebookRequest
 from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
-from tests import FakeFacebookRequest, FakeFacebookBatchRequest, TestCase
+from tests import FakeFacebookRequest, FakeFacebookBatchRequest
 
 
 class TestFacebookResponse(TestCase):
@@ -24,10 +25,8 @@ class TestFacebookResponse(TestCase):
             http_status_code=200
         )
 
-        self.assertRaises(
-            FacebookResponseException,
-            response.raiseException,
-        )
+        with self.assertRaises(FacebookResponseException):
+            response.raiseException()
 
     def test_build_exception(self):
         response = FacebookResponse(
@@ -96,10 +95,8 @@ class TestFacebookResponsePagination(TestCase):
     def test_http_allowed_method_for_pagination(self):
         self.response.request.method = 'POST'
 
-        self.assertRaises(
-            FacebookSDKException,
-            self.response.next_page_request,
-        )
+        with self.assertRaises(FacebookSDKException):
+            self.response.next_page_request()
 
 
 class TestFacebookBatchResponse(TestCase):
