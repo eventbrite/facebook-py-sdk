@@ -35,7 +35,7 @@ class FacebookApp(object):
 
 
 class Facebook(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         super(Facebook, self).__init__()
 
         self.config = {
@@ -69,7 +69,7 @@ class Facebook(object):
             app_id=self.config['app_id'],
             app_secret=self.config['app_secret']
         )
-        self.client = FacebookClient()
+        self.client = FacebookClient(request_timeout=kwargs.get('default_request_timeout'))
         self.oauth_client = OAuth2Client(
             app=self.app,
             client=self.client,

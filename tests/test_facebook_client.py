@@ -1,16 +1,18 @@
+import os
 from unittest import TestCase
 
 from facebook_sdk.constants import BASE_GRAPH_URL
 from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
-from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
-from facebook_sdk.response import FacebookResponse, FacebookBatchResponse
+from facebook_sdk.facebook_file import FacebookFile
+from facebook_sdk.request import FacebookBatchRequest, FacebookRequest
+from facebook_sdk.response import FacebookBatchResponse, FacebookResponse
 from tests import FakeFacebookClient, FakeResponse
 
 
 class TestFacebookClient(TestCase):
     def setUp(self):
         super(TestFacebookClient, self).setUp()
-        self.request = FacebookRequest(endpoint='')
+        self.request = FacebookRequest(endpoint='me', method='GET')
         self.batch_request = FacebookBatchRequest(
             access_token='fake_token',
             requests=[self.request]
@@ -37,7 +39,63 @@ class TestFacebookClient(TestCase):
 
     def test_send_request(self):
         response = self.client.send_request(self.request)
+
         self.assertIsInstance(response, FacebookResponse)
+        self.assertDictContainsSubset({
+            'method': 'GET',
+            'url': 'https://graph.facebook.com/v2.5/me',
+            'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
+            'params': {'access_token': 'fake_token'},
+            'files': [],
+            'timeout': 60,
+            'data': None,
+        }, self.client.send_kwargs)
+
+    def test_send_request_override_timeout(self):
+        self.client = FakeFacebookClient(
+            fake_response=self.fake_response,
+            request_timeout=10,
+        )
+        self.client.send_request(self.request)
+
+        self.assertDictEqual({
+            'method': 'GET',
+            'url': 'https://graph.facebook.com/v2.5/me',
+            'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
+            'params': {'access_token': 'fake_token'},
+            'files': [],
+            'timeout': 10,
+            'data': None,
+        }, self.client.send_kwargs)
+
+    def test_send_request_with_file(self):
+        file_to_upload = FacebookFile(
+            path='{base_path}/foo.txt'.format(
+                base_path=os.path.dirname(os.path.abspath(__file__))
+            ),
+        )
+        request = FacebookRequest(
+            endpoint='photos',
+            method='POST',
+            params={
+                'message': 'Awesome Photo',
+                'source': file_to_upload,
+            },
+            access_token='fake_token',
+        )
+        self.client = FakeFacebookClient(
+            fake_response=self.fake_response,
+        )
+        self.client.send_request(request)
+        self.assertDictEqual({
+            'method': 'POST',
+            'url': 'https://graph.facebook.com/v2.5/photos',
+            'headers': {},
+            'params': {'access_token': 'fake_token'},
+            'files': [('source', ('foo.txt', file_to_upload, 'text/plain'))],
+            'timeout': 60,
+            'data': {'message': 'Awesome Photo'},
+        }, self.client.send_kwargs)
 
     def test_send_request_error(self):
         self.client = FakeFacebookClient(
@@ -56,6 +114,14 @@ class TestFacebookClient(TestCase):
             batch_request=self.batch_request,
         )
         self.assertIsInstance(response, FacebookBatchResponse)
+        self.assertDictContainsSubset({
+            'method': 'POST',
+            'url': 'https://graph.facebook.com/v2.5/',
+            'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
+            'params': {'access_token': 'fake_token'},
+            'files': [],
+            'timeout': 60,
+        }, self.client.send_kwargs)
 
     def test_send_empty_batch_request(self):
         with self.assertRaises(FacebookSDKException):

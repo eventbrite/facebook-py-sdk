@@ -4,11 +4,13 @@ from facebook_sdk.response import FacebookResponse
 
 
 class FakeFacebookClient(FacebookClient):
-    def __init__(self, fake_response):
-        super(FakeFacebookClient, self).__init__()
-        self.fake_response = fake_response
+    def __init__(self, **kwargs):
+        self.fake_response = kwargs.pop('fake_response')
+        super(FakeFacebookClient, self).__init__(**kwargs)
 
     def send(self, *args, **kwargs):
+        self.send_args = args,
+        self.send_kwargs = kwargs
         return self.fake_response
 
 
