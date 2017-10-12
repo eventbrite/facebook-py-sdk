@@ -1,4 +1,6 @@
 import re
+import six
+
 try:
     from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
 except ImportError:
@@ -29,7 +31,15 @@ def remove_params_from_url(url, params_to_remove):
 
     return newurl
 
+
 def get_params_from_url(url):
     parsed = urlparse(url)
     qd = parse_qs(parsed.query, keep_blank_values=True)
     return qd
+
+
+def convert_params_to_utf8(params):
+    return {
+        k: v.encode("utf-8") if isinstance(v, six.text_type) else v
+        for k, v in params.items()
+    }

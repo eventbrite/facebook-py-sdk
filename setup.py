@@ -14,7 +14,7 @@ setup(
     author_email='zetahernandez@gmail.com',
     url='http://github.com/zetahernandez/facebook-python-sdk',
     packages=['facebook_sdk'],
-    install_requires=['requests >=0.8'],
+    install_requires=['requests >=0.8', 'six'],
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',

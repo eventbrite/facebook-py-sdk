@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 from unittest import TestCase
 
@@ -102,7 +104,7 @@ class TestFacebookRequest(TestCase):
                 )
             }
         )
-        request= FacebookRequest(endpoint='')
+        request = FacebookRequest(endpoint='')
 
         self.assertTrue(request_with_file.contain_files())
         self.assertFalse(request.contain_files())
@@ -136,7 +138,7 @@ class TestFacebookBatchRequest(TestCase):
         self.req2 = FacebookRequest(
             endpoint='123',
             method=METHOD_POST,
-            params={'foo': 'bar'},
+            params={'foo': u'bár'},
         )
         self.req3 = FacebookRequest(
             access_token='other_token',
@@ -146,7 +148,7 @@ class TestFacebookBatchRequest(TestCase):
         self.req4 = FacebookRequest(
             endpoint='123',
             method=METHOD_GET,
-            params={'fields': 'name, description'},
+            params={'fields': u'name, descriptión'},
             headers={'Conent-Type': 'application/json'},
         )
 
@@ -182,7 +184,7 @@ class TestFacebookBatchRequest(TestCase):
         )
         expected_batch = (
             '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
-            '{"body": "foo=bar", "headers": {}, "method": "POST", "relative_url": "/v2.5/123", "name": "1"}, '
+            '{"body": "foo=b%C3%A1r", "headers": {}, "method": "POST", "relative_url": "/v2.5/123", "name": "1"}, '
             '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.5/123?access_token=other_token", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
@@ -196,7 +198,7 @@ class TestFacebookBatchRequest(TestCase):
         )
         expected_batch = (
             '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
-            '{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token&fields=name%2C+description", "name": "1"}]'
+            '{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token&fields=name%2C+descripti%C3%B3n", "name": "1"}]'
         )
 
         batch_request.prepare_batch_request()

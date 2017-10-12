@@ -14,7 +14,12 @@ except ImportError:
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
 from facebook_sdk.exceptions import FacebookSDKException
-from facebook_sdk.utils import force_slash_prefix, remove_params_from_url, get_params_from_url
+from facebook_sdk.utils import (
+    convert_params_to_utf8,
+    force_slash_prefix,
+    get_params_from_url,
+    remove_params_from_url,
+)
 
 MAX_REQUEST_BY_BATCH = 50
 
@@ -124,7 +129,7 @@ class FacebookRequest(object):
         url = self.url
 
         if self.method != METHOD_POST and params:
-            return '{url}?{encoded_params}'.format(url=url, encoded_params=urlencode(self.params))
+            return '{url}?{encoded_params}'.format(url=url, encoded_params=urlencode(convert_params_to_utf8(self.params)))
 
         return url
 
@@ -136,7 +141,10 @@ class FacebookRequest(object):
         """
         params = self.post_params
 
-        return urlencode(params) if params else None
+        if not params:
+            return None
+
+        return urlencode(convert_params_to_utf8(params))
 
     def add_headers(self, headers):
         """ Append headers to the request.
