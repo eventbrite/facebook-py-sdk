@@ -5,7 +5,7 @@ readme = open('README.rst').read()
 history = open('CHANGELOG.md').read()
 
 setup(
-    name='facebook-sdk-python',
+    name='facebook-py-sdk',
     version=__VERSION__,
     description='Facebook Python SDK',
     long_description=readme + '\n\n' + history,
