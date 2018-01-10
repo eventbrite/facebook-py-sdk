@@ -29,8 +29,8 @@ class FacebookApp(object):
         return AccessToken(
             access_token='{id}|{secret}'.format(
                 id=self.id,
-                secret=self.secret
-            )
+                secret=self.secret,
+            ),
         )
 
 
@@ -76,7 +76,7 @@ class Facebook(object):
             graph_version=self.default_graph_version,
         )
 
-    def request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+    def request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None, timeout=None):
         access_token = access_token or getattr(self, 'default_access_token', None)
         graph_version = graph_version or self.default_graph_version
 
@@ -88,9 +88,10 @@ class Facebook(object):
             params=params,
             headers=headers,
             graph_version=graph_version,
+            timeout=timeout,
         )
 
-    def send_request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+    def send_request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None, timeout=None):
         request = self.request(
             method=method,
             access_token=access_token,
@@ -98,6 +99,7 @@ class Facebook(object):
             params=params,
             headers=headers,
             graph_version=graph_version,
+            timeout=timeout,
         )
         response = self.send_facebook_request(request=request)
 
@@ -109,7 +111,7 @@ class Facebook(object):
         """
         return self.client.send_request(request=request)
 
-    def send_batch_request(self, requests, access_token=None, graph_version=None):
+    def send_batch_request(self, requests, access_token=None, graph_version=None, timeout=None):
         access_token = access_token or getattr(self, 'default_access_token', None)
         graph_version = graph_version or self.default_graph_version
 
@@ -118,6 +120,7 @@ class Facebook(object):
             requests=requests,
             access_token=access_token,
             graph_version=graph_version,
+            timeout=timeout,
         )
 
         response = self.client.send_batch_request(batch_request=batch_request)

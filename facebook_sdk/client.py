@@ -28,7 +28,7 @@ class FacebookClient(object):
                 data = request.post_params
         else:
             request.add_headers([
-                {'Content-Type': 'application/x-www-form-urlencoded'}
+                {'Content-Type': 'application/x-www-form-urlencoded'},
             ])
             if request.post_params:
                 data = urlencode(request.post_params)
@@ -40,7 +40,7 @@ class FacebookClient(object):
             data=data,
             headers=request.headers,
             files=request.files_to_upload(),
-            timeout=self.timeout,
+            timeout=request.timeout or self.timeout,
         )
 
     def send_request(self, request):
@@ -57,7 +57,7 @@ class FacebookClient(object):
         response = FacebookResponse(
             request=request,
             body=res.content,
-            http_status_code=res.status_code
+            http_status_code=res.status_code,
         )
 
         if response.is_error:
@@ -89,7 +89,7 @@ class FacebookClient(object):
 
         response = FacebookBatchResponse(
             batch_request=batch_request,
-            batch_response=batch_response
+            batch_response=batch_response,
         )
 
         return response
