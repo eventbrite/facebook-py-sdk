@@ -55,7 +55,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
-            )
+            ),
         )
         response = self.facebook.send_request(
             method='GET',
@@ -72,7 +72,7 @@ class TestFacebook(TestCase):
         self.assertEqual(response.request.timeout, 182)
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
-    def test_send_request_default_access_token___version_and_timeout(self):
+    def test_send_request_default_access_token_and_version(self):
         self.facebook.client = FakeFacebookClient(
             fake_response=FakeResponse(
                 status_code=200,
@@ -88,7 +88,6 @@ class TestFacebook(TestCase):
         self.assertEqual(response.request.endpoint, 'some_endpoint')
         self.assertEqual(response.request.access_token, 'my_token')
         self.assertEqual(response.request.graph_version, 'v2.6')
-        self.assertEqual(response.request.timeout, 10)
         self.assertDictEqual(response.request.params, {'access_token': 'my_token'})
 
     def test_send_batch_request(self):
@@ -116,7 +115,7 @@ class TestFacebook(TestCase):
         self.assertEqual(response.request.timeout, 182)
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
-    def test_send_batch_request_default_access_token__version_and_timeout(self):
+    def test_send_batch_request_default_access_token_and_version(self):
         self.facebook.client = FakeFacebookClient(
             fake_response=FakeResponse(
                 status_code=200,
@@ -135,7 +134,6 @@ class TestFacebook(TestCase):
         self.assertEqual(response.request.method, 'POST')
         self.assertEqual(response.request.access_token, 'my_token')
         self.assertEqual(response.request.graph_version, 'v2.6')
-        self.assertEqual(response.request.timeout, 60)
         self.assertDictEqual(response.request.params, {'access_token': 'my_token'})
 
     def test_get_facebook_get_method(self):
