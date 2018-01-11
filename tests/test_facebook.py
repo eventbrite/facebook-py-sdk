@@ -55,19 +55,21 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
-            )
+            ),
         )
         response = self.facebook.send_request(
             method='GET',
             endpoint='some_endpoint',
             access_token='foo_token',
-            graph_version='v2.7'
+            graph_version='v2.7',
+            timeout=182,
         )
         self.assertIsInstance(response, FacebookResponse)
         self.assertEqual(response.request.method, 'GET')
         self.assertEqual(response.request.endpoint, 'some_endpoint')
         self.assertEqual(response.request.access_token, 'foo_token')
         self.assertEqual(response.request.graph_version, 'v2.7')
+        self.assertEqual(response.request.timeout, 182)
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
     def test_send_request_default_access_token_and_version(self):
@@ -103,12 +105,14 @@ class TestFacebook(TestCase):
         response = self.facebook.send_batch_request(
             requests=batches,
             access_token='foo_token',
-            graph_version='v2.7'
+            graph_version='v2.7',
+            timeout=182,
         )
 
         self.assertEqual(response.request.method, 'POST')
         self.assertEqual(response.request.access_token, 'foo_token')
         self.assertEqual(response.request.graph_version, 'v2.7')
+        self.assertEqual(response.request.timeout, 182)
         self.assertDictEqual(response.request.params, {'access_token': 'foo_token'})
 
     def test_send_batch_request_default_access_token_and_version(self):

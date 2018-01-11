@@ -2,6 +2,7 @@ import uuid
 
 from facebook_sdk.facebook_file import FacebookFile
 
+
 try:
     import simplejson as json
 except ImportError:
@@ -30,7 +31,7 @@ class FacebookRequest(object):
     """
 
     def __init__(self, app=None, access_token=None, method=None, endpoint=None, params=None, headers=None,
-                 graph_version=None):
+                 graph_version=None, timeout=None):
         super(FacebookRequest, self).__init__()
 
         # Default empty dicts for dict params.
@@ -45,6 +46,7 @@ class FacebookRequest(object):
         self.graph_version = graph_version
         self.headers = headers
         self.params = params
+        self.timeout = timeout
 
     @property
     def endpoint(self):
@@ -175,7 +177,7 @@ class FacebookBatchRequest(FacebookRequest):
 
     """
 
-    def __init__(self, app=None, requests=None, access_token=None, graph_version=None):
+    def __init__(self, app=None, requests=None, access_token=None, graph_version=None, timeout=None):
         """
         :param requests: a list of FacebookRequest
         :param access_token: the access token for the batch request
@@ -189,6 +191,7 @@ class FacebookBatchRequest(FacebookRequest):
             graph_version=graph_version,
             method=METHOD_POST,
             endpoint='',
+            timeout=timeout,
         )
 
         self.requests = []
