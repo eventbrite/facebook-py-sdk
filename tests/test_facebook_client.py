@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 from unittest import TestCase
 
@@ -36,6 +37,17 @@ class TestFacebookClient(TestCase):
         self.assertEqual(request_params.get('params'), self.request.params)
         self.assertIn('Content-Type', request_params.get('headers'))
         self.assertEqual(request_params.get('headers').get('Content-Type'), 'application/x-www-form-urlencoded')
+
+    def test_prepare_request_with_ascii_encoded_params(self):
+        request = FacebookRequest(
+            endpoint='events',
+            method='POST',
+            params={
+                'foo': u'ánother boRken param',
+            },
+        )
+        request_params = self.client._prepareRequest(request=request)
+        self.assertEqual(request_params.get('method'), request.method)
 
     def test_send_request(self):
         response = self.client.send_request(self.request)
