@@ -6,6 +6,7 @@ import requests
 
 from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
 from facebook_sdk.response import FacebookBatchResponse, FacebookResponse
+from facebook_sdk.utils import convert_params_to_utf8
 
 
 class FacebookClient(object):
@@ -31,7 +32,7 @@ class FacebookClient(object):
                 {'Content-Type': 'application/x-www-form-urlencoded'},
             ])
             if request.post_params:
-                data = urlencode(request.post_params)
+                data = urlencode(convert_params_to_utf8(request.post_params))
 
         return dict(
             url=url,
