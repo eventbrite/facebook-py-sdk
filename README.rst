@@ -18,7 +18,7 @@ To install Facebook SDK Python, simply:
 
 .. code-block:: bash
 
-    $ pip install facebook-sdk-python
+    $ pip install facebook-py-sdk
 
 Usage
 =====
@@ -114,4 +114,3 @@ Running tests
 
  ➜  facebook-python-sdk $ pip install nose2
  ➜  facebook-python-sdk $ nosetests
-
