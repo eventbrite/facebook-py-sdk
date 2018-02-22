@@ -25,3 +25,4 @@ deploy:
         secure: PlNFFbmKbIse1Pob1JWHUwfQWLM6j5fnGXElwr+Y/YuO1yhGtil4RET6sHyctkSK79TTD0UxYfR/G9LmiICAmQT5BRajYM/8UymneYMCMBgiMlDlmFHP3FLJtdCo6CKM+Spi+Zk6fJbWIWYQz+s0O9xhlzzvv95PiQNr02NrrcFkqdccVVWMwJFiMpQzFtD6BPe5E5osOZSomjHDG/gnGHJTE3pW5aygH6aAYxXm71zqsgNBQOvzu3VbnRVRtqQKWBFnv6dTDHcBoJgAYpKIVxCxy8wNIup+qp0G2vZEyrn+AokDow7brwhvVQJuBMqiB0S5IJMWcB9iXc6vndlEC/GWI/nsHFRrlP4byzgRLBiIqFWnF7lr7Fz5EaCshww5DGbKqtYLU0m6Pafk+KNITYKE5guva/Tnc9Oe2Sfa84j7XD7e77cmrBhv+dSZSYa58jbIrEbnWi1vgfS1V86GVqZ8FFAo70wdDj9C/dhKt+wdSwIpOVm70QFJqcjT7Y23uonRBFjiUGU9i1BsNw5qiaAIQVAkat2uTziZ5BN2Y+zQraCAoeoxjtj73+N+dtwHmIOhgmNeQezraec+IE2rN3ZV0PujQme1qS2OpyiAoyBYc9Z/b4wa5Y87DoiwIIA8w+J8d56NLRu6KseNW7/Il7M13fPaItz3LnFZmfvwCug=
     on:
         tags: true
+        python: '3.6'
