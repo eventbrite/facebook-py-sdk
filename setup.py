@@ -2,13 +2,12 @@ from setuptools import setup
 from facebook_sdk import __VERSION__
 
 readme = open('README.rst').read()
-history = open('CHANGELOG.md').read()
 
 setup(
     name='facebook-py-sdk',
     version=__VERSION__,
     description='Facebook Python SDK',
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     license="MIT",
     author='Zeta Hernandez',
     author_email='zetahernandez@gmail.com',
