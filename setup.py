@@ -12,7 +12,7 @@ setup(
     license="MIT",
     author='Zeta Hernandez',
     author_email='zetahernandez@gmail.com',
-    url='http://github.com/zetahernandez/facebook-python-sdk',
+    url='https://github.com/eventbrite/facebook-py-sdk',
     packages=['facebook_sdk'],
     install_requires=['requests >=0.8', 'six'],
     classifiers=[
