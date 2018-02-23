@@ -44,7 +44,8 @@ Retrieve User Profile
     except FacebookResponseException as e:
         print(e.message)
     else:
-        print('User name: %(name)s' % {'name': response.json_body.get('id')})
+        print('User id: %(name)s' % {'name': response.json_body.get('id')})
+        print('User name: %(name)s' % {'name': response.json_body.get('name')})
 
 
 Batch Upload Files
