@@ -55,7 +55,7 @@ class TestFacebookClient(TestCase):
         self.assertIsInstance(response, FacebookResponse)
         self.assertDictContainsSubset({
             'method': 'GET',
-            'url': 'https://graph.facebook.com/v2.5/me',
+            'url': 'https://graph.facebook.com/v2.12/me',
             'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
             'params': {'access_token': 'fake_token'},
             'files': [],
@@ -72,7 +72,7 @@ class TestFacebookClient(TestCase):
 
         self.assertDictEqual({
             'method': 'GET',
-            'url': 'https://graph.facebook.com/v2.5/me',
+            'url': 'https://graph.facebook.com/v2.12/me',
             'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
             'params': {'access_token': 'fake_token'},
             'files': [],
@@ -101,7 +101,7 @@ class TestFacebookClient(TestCase):
         self.client.send_request(request)
         self.assertDictEqual({
             'method': 'POST',
-            'url': 'https://graph.facebook.com/v2.5/photos',
+            'url': 'https://graph.facebook.com/v2.12/photos',
             'headers': {},
             'params': {'access_token': 'fake_token'},
             'files': [('source', ('foo.txt', file_to_upload, 'text/plain'))],
@@ -128,7 +128,7 @@ class TestFacebookClient(TestCase):
         self.assertIsInstance(response, FacebookBatchResponse)
         self.assertDictContainsSubset({
             'method': 'POST',
-            'url': 'https://graph.facebook.com/v2.5/',
+            'url': 'https://graph.facebook.com/v2.12/',
             'headers': {'Content-Type': 'application/x-www-form-urlencoded'},
             'params': {'access_token': 'fake_token'},
             'files': [],

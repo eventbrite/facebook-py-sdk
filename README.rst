@@ -34,7 +34,7 @@ Retrieve User Profile
     facebook = Facebook(
         app_id='{app_id}',
         app_secret='{app_secret}',
-        default_graph_version='v2.5',
+        default_graph_version='v2.12',
     )
 
     facebook.set_default_access_token(access_token='{access_token}')
