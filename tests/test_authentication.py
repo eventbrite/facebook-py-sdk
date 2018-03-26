@@ -74,7 +74,7 @@ class OAuth2ClientTest(TestCase):
             body='{"data":{"user_id":"444"}}',
             headers=[]
         )
-        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.5')
+        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.12')
         metadata = oauth_client.debug_token(access_token='foo_token')
 
         self.assertEqual(metadata.get('data').get('user_id'), '444')
@@ -87,11 +87,11 @@ class OAuth2ClientTest(TestCase):
 
         self.assertEqual(request.method, 'GET')
         self.assertEqual(request.endpoint, '/debug_token')
-        self.assertEqual(request.graph_version, 'v2.5')
+        self.assertEqual(request.graph_version, 'v2.12')
         self.assertDictEqual(request.params, expected_params)
 
     def test_get_authorization_url(self):
-        oauth_client = OAuth2Client(app=self.app, client=None, graph_version='v2.5')
+        oauth_client = OAuth2Client(app=self.app, client=None, graph_version='v2.12')
         scope = ['email', 'base_foo']
         params = {
             'foo': 'bar'
@@ -104,7 +104,7 @@ class OAuth2ClientTest(TestCase):
             scope=scope,
         )
 
-        expected_url = 'https://www.facebook.com/v2.5/dialog/oauth'
+        expected_url = 'https://www.facebook.com/v2.12/dialog/oauth'
         self.assertIn(expected_url, auth_url)
 
         params = {
@@ -126,7 +126,7 @@ class OAuth2ClientTest(TestCase):
             body='{"access_token":"my_access_token","expires":"1422115200"}',
             headers=[],
         )
-        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.5')
+        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.12')
         long_live_access_token = oauth_client.get_long_lived_access_token(access_token='foo_token')
 
         self.assertIsInstance(long_live_access_token, AccessToken)
@@ -150,7 +150,7 @@ class OAuth2ClientTest(TestCase):
             body='{"access_token":"my_access_token","expires":"1422115200"}',
             headers=[],
         )
-        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.5')
+        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.12')
         access_token = oauth_client.get_access_token_from_code(code='bar_code', redirect_uri='foo_uri')
 
         self.assertIsInstance(access_token, AccessToken)
@@ -174,7 +174,7 @@ class OAuth2ClientTest(TestCase):
             body='{"code":"my_neat_code"}',
             headers=[],
         )
-        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.5')
+        oauth_client = OAuth2Client(app=self.app, client=fb_client, graph_version='v2.12')
 
         code = oauth_client.get_code_from_long_lived_access_token(
             access_token='long_access_token',
