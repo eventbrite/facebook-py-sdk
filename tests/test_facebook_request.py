@@ -183,9 +183,9 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req2, self.req3]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
-            '{"body": "foo=b%C3%A1r", "headers": {}, "method": "POST", "relative_url": "/v2.5/123", "name": "1"}, '
-            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.5/123?access_token=other_token", "name": "2"}]'
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.12/123?access_token=fake_token", "name": "0"}, '
+            '{"body": "foo=b%C3%A1r", "headers": {}, "method": "POST", "relative_url": "/v2.12/123", "name": "1"}, '
+            '{"access_token": "other_token", "headers": {}, "method": "DELETE", "relative_url": "/v2.12/123?access_token=other_token", "name": "2"}]'
         )
         batch_request.prepare_batch_request()
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))
@@ -197,8 +197,8 @@ class TestFacebookBatchRequest(TestCase):
             requests=[self.req1, self.req4]
         )
         expected_batch = (
-            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token", "name": "0"}, '
-            '{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.5/123?access_token=fake_token&fields=name%2C+descripti%C3%B3n", "name": "1"}]'
+            '[{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.12/123?access_token=fake_token", "name": "0"}, '
+            '{"headers": {"Conent-Type": "application/json"}, "method": "GET", "relative_url": "/v2.12/123?access_token=fake_token&fields=name%2C+descripti%C3%B3n", "name": "1"}]'
         )
 
         batch_request.prepare_batch_request()
@@ -229,7 +229,7 @@ class TestFacebookBatchRequest(TestCase):
             access_token='fake_token',
             requests=[request],
         )
-        expected_batch = '[{"body": "message=foo", "attached_files": "%(attached_files)s", "name": "0", "relative_url": "/v2.5/foo", "headers": {}, "method": "POST"}]' % dict(attached_files=batch_request.requests[0].get('attached_files'))
+        expected_batch = '[{"body": "message=foo", "attached_files": "%(attached_files)s", "name": "0", "relative_url": "/v2.12/foo", "headers": {}, "method": "POST"}]' % dict(attached_files=batch_request.requests[0].get('attached_files'))
         batch_request.prepare_batch_request()
 
         self.assertEqual(sorted(batch_request.post_params['batch']), sorted(expected_batch))
