@@ -43,3 +43,12 @@ def convert_params_to_utf8(params):
         k: v.encode("utf-8") if isinstance(v, six.text_type) else v
         for k, v in params.items()
     }
+
+
+def smart_text(value, encoding='utf-8', **kwargs):
+    if isinstance(value, six.text_type):
+        return value
+    elif isinstance(value, six.binary_type):
+        return value.decode(encoding=encoding, **kwargs)
+    else:
+        return six.text_type(value)
