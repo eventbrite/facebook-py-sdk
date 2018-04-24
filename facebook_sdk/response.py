@@ -1,15 +1,9 @@
 from copy import copy
+import json
 
 from facebook_sdk.constants import METHOD_GET
-from facebook_sdk.utils import base_graph_url_endpoint
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
 from facebook_sdk.exceptions import FacebookResponseException, FacebookSDKException
-from facebook_sdk.request import FacebookRequest, FacebookBatchRequest
+from facebook_sdk.utils import base_graph_url_endpoint, smart_text
 
 
 class ResponsePaginationMixin(object):
@@ -77,8 +71,8 @@ class FacebookResponse(ResponsePaginationMixin):
 
         """
         try:
-            self.json_body = json.loads(self.body)
-        except:
+            self.json_body = json.loads(smart_text(self.body))
+        except Exception:
             self.json_body = {}
 
     def raiseException(self):

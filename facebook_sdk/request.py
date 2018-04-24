@@ -1,20 +1,11 @@
+import json
 import uuid
 
-from facebook_sdk.facebook_file import FacebookFile
-
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
+from six.moves.urllib.parse import urlencode
 
 from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
 from facebook_sdk.exceptions import FacebookSDKException
+from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.utils import (
     convert_params_to_utf8,
     force_slash_prefix,
