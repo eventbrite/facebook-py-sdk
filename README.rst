@@ -113,5 +113,5 @@ Running tests
 
 .. code-block:: bash
 
- ➜  facebook-python-sdk $ pip install nose2
- ➜  facebook-python-sdk $ nosetests
+ ➜  facebook-python-sdk $ pip install -r requirements-dev.txt
+ ➜  facebook-python-sdk $ py.test
