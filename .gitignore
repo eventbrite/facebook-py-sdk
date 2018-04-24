@@ -1,5 +1,6 @@
 .idea/
 .pypirc
+.pytest_cache/
 .DS_Store
 *.pyc
 build/
