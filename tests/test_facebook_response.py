@@ -18,6 +18,15 @@ class TestFacebookResponse(TestCase):
         )
         self.assertEqual(expected_body, response.json_body)
 
+    def test_parse_body_for_bytestrings(self):
+        expected_body = {'success': True}
+        response = FacebookResponse(
+            request=FakeFacebookRequest(),
+            body=b'{"success": true}',
+            http_status_code=200,
+        )
+        self.assertEqual(expected_body, response.json_body)
+
     def test_raise_exception(self):
         response = FacebookResponse(
             request=FakeFacebookRequest(),
