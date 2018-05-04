@@ -18,6 +18,13 @@ class FacebookResponseException(FacebookSDKException):
     def __init__(self, response, code, message, *args, **kwargs):
         super(FacebookResponseException, self).__init__(code, message)
         self.response = response
+        self.code = code
+        self.message = message
+
+        self.error_subcode = kwargs.get('error_subcode')
+        self.error_user_msg = kwargs.get('error_user_msg', '')
+        self.error_user_title = kwargs.get('error_user_title', '')
+        self.type = kwargs.get('error_type', '')
 
     @staticmethod
     def create(response):
@@ -29,16 +36,16 @@ class FacebookResponseException(FacebookSDKException):
         )
 
         code = error.get('code', -1)
-        sub_code = error.get('error_subcode', -1)
+        subcode = error.get('error_subcode', -1)
         message = error.get('message', 'Unknown error from Graph.')
 
         if (
-            sub_code in SUB_CODE_AUTH_EXCEPTION_CODES or
+            subcode in SUB_CODE_AUTH_EXCEPTION_CODES or
             code in AUTH_EXCEPTION_CODES or
             error.get('type') == 'OAuthException'
         ):
             exception = FacebookAuthenticationException
-        elif sub_code in SUB_CODE_RESUMABLE_UPLOAD_EXCEPTION_CODES:
+        elif subcode in SUB_CODE_RESUMABLE_UPLOAD_EXCEPTION_CODES:
             exception = FacebookResumableUploadException
         elif code in SERVER_EXCEPTION_CODES:
             exception = FacebookServerException
@@ -49,7 +56,15 @@ class FacebookResponseException(FacebookSDKException):
         else:
             exception = FacebookOtherException
 
-        return exception(response=response, code=code, message=message)
+        return exception(
+            response=response,
+            code=code,
+            message=message,
+            error_subcode=subcode,
+            error_user_title=error.get('error_user_title', ''),
+            error_user_msg=error.get('error_user_msg', ''),
+            error_type=error.get('type', ''),
+        )
 
 
 class FacebookAuthenticationException(FacebookResponseException):
