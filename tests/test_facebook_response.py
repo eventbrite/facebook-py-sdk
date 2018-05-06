@@ -144,3 +144,66 @@ class TestFacebookBatchResponse(TestCase):
             request_dict = self.batch_request.requests[index]
             self.assertEqual(response_dict.get('name'), request_dict.get('name'))
             self.assertEqual(response_dict.get('response').request, request_dict.get('request'))
+
+
+class TestFacebookResponseException(TestCase):
+
+    def test_raise_exception_from_complete_error(self):
+        """Test a failed response triggers a correctly populated exception.
+
+        Consider all the error fields specified in:
+        https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling
+        """
+        response = FacebookResponse(
+            request=FakeFacebookRequest(),
+            body=json.dumps({
+                'error': {
+                    'message': 'Message describing the error',
+                    'type': 'OAuthException',
+                    'code': 190,
+                    'error_subcode': 460,
+                    'error_user_title': 'A title',
+                    'error_user_msg': 'A message',
+                    'fbtrace_id': 'EJplcsCHuLu',
+                },
+            }),
+            http_status_code=200
+        )
+
+        with self.assertRaises(FacebookResponseException) as cm:
+            response.raiseException()
+        exception = cm.exception
+
+        self.assertEqual(exception.code, 190)
+        self.assertEqual(exception.error_subcode, 460)
+        self.assertEqual(exception.error_user_title, 'A title')
+        self.assertEqual(exception.error_user_msg, 'A message')
+        self.assertEqual(exception.message, 'Message describing the error')
+        self.assertEqual(exception.type, 'OAuthException')
+
+    def test_raise_exception_from_incomplete_error(self):
+        """Test a failed response without all the information triggers a correctly populated exception."""
+        response = FacebookResponse(
+            request=FakeFacebookRequest(),
+            body=json.dumps({
+                'error': {
+                    'message': 'Message describing the error',
+                    'type': 'OAuthException',
+                    'code': 190,
+                    'error_subcode': 460,
+                    'fbtrace_id': 'EJplcsCHuLu',
+                },
+            }),
+            http_status_code=200
+        )
+
+        with self.assertRaises(FacebookResponseException) as cm:
+            response.raiseException()
+        exception = cm.exception
+
+        self.assertEqual(exception.code, 190)
+        self.assertEqual(exception.error_subcode, 460)
+        self.assertEqual(exception.error_user_title, '')
+        self.assertEqual(exception.error_user_msg, '')
+        self.assertEqual(exception.message, 'Message describing the error')
+        self.assertEqual(exception.type, 'OAuthException')
