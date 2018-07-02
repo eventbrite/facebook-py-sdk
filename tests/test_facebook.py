@@ -26,7 +26,7 @@ class TestFacebook(TestCase):
         self.assertIsInstance(self.facebook.client, FacebookClient)
         self.assertIsInstance(self.facebook.oauth_client, OAuth2Client)
 
-        self.assertEqual(self.facebook.app.id, '123')
+        self.assertEqual(self.facebook.app.app_id, '123')
         self.assertEqual(self.facebook.app.secret, 'secret')
         self.assertEqual(self.facebook.default_graph_version, 'v2.6')
         self.assertEqual(str(self.facebook.default_access_token), 'my_token')
@@ -186,7 +186,7 @@ class TestFacebookApp(TestCase):
         self.app = FacebookApp('id', 'secret')
 
     def test_initialize(self):
-        self.assertEqual('id', self.app.id)
+        self.assertEqual('id', self.app.app_id)
         self.assertEqual('secret', self.app.secret)
 
     def test_app_access_token_can_be_generated(self):

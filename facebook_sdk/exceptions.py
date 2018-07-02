@@ -1,3 +1,17 @@
+from typing import (  # noqa: F401
+    TYPE_CHECKING,
+    Any,
+    Text,
+    Tuple,
+    Type,
+    Union,
+)
+
+
+if TYPE_CHECKING:
+    from facebook_sdk.response import FacebookResponse  # noqa: F401
+
+
 SUB_CODE_AUTH_EXCEPTION_CODES = (458, 459, 460, 463, 464, 467)
 SUB_CODE_RESUMABLE_UPLOAD_EXCEPTION_CODES = (1363030, 1363030, 1363037, 1363033, 1363021, 1363041)
 AUTH_EXCEPTION_CODES = (100, 102, 190)
@@ -15,7 +29,8 @@ class FacebookRequestException(FacebookSDKException):
 
 
 class FacebookResponseException(FacebookSDKException):
-    def __init__(self, response, code, message, *args, **kwargs):
+    def __init__(self, response, code, message, **kwargs):
+        # type: (FacebookResponse, int, Text,  Any) -> None
         super(FacebookResponseException, self).__init__(code, message)
         self.response = response
         self.code = code
@@ -28,6 +43,7 @@ class FacebookResponseException(FacebookSDKException):
 
     @staticmethod
     def create(response):
+        # type: (FacebookResponse) -> FacebookResponseException
         data = response.json_body
         error = (
             data
@@ -38,7 +54,7 @@ class FacebookResponseException(FacebookSDKException):
         code = error.get('code', -1)
         subcode = error.get('error_subcode', -1)
         message = error.get('message', 'Unknown error from Graph.')
-
+        exception = FacebookOtherException  # type: Type[FacebookResponseException]
         if (
             subcode in SUB_CODE_AUTH_EXCEPTION_CODES or
             code in AUTH_EXCEPTION_CODES or
@@ -53,8 +69,6 @@ class FacebookResponseException(FacebookSDKException):
             exception = FacebookThrottleException
         elif code == 10 or 200 <= code <= 299:
             exception = FacebookAuthorizationException
-        else:
-            exception = FacebookOtherException
 
         return exception(
             response=response,
