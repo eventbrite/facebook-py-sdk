@@ -1,28 +1,43 @@
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
 import requests
+from six.moves.urllib.parse import urlencode
+from typing import (  # noqa: F401
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    Text,
+    Tuple,
+    Union,
+)
 
-from facebook_sdk.constants import BASE_GRAPH_URL, DEFAULT_REQUEST_TIMEOUT
-from facebook_sdk.response import FacebookBatchResponse, FacebookResponse
+from facebook_sdk.constants import (
+    BASE_GRAPH_URL,
+    DEFAULT_REQUEST_TIMEOUT,
+)
+from facebook_sdk.response import (
+    FacebookBatchResponse,
+    FacebookResponse,
+)
 from facebook_sdk.utils import convert_params_to_utf8
+
+
+if TYPE_CHECKING:
+    from facebook_sdk.facebook_file import FacebookFile  # noqa: F401
+    from facebook_sdk.request import FacebookRequest, FacebookBatchRequest  # noqa: F401
 
 
 class FacebookClient(object):
 
     def __init__(self, request_timeout=None):
-        self.timeout = request_timeout or DEFAULT_REQUEST_TIMEOUT
+        # type: (Optional[int]) -> None
+        self.timeout = request_timeout or DEFAULT_REQUEST_TIMEOUT  # tpye: int
 
     def _prepareRequest(self, request):
-        """
+        # type: (FacebookRequest) -> Dict
+        url = BASE_GRAPH_URL + request.url  # type: str
 
-        :type request: FacebookRequest
-        :rtype: tuple
-        """
-        url = BASE_GRAPH_URL + request.url
-
-        data = None
+        data = None  # type: Optional[Union[Optional[Dict], Text]]
         if request.contain_files():
             if request.post_params:
                 # Content-Type form-data will be provided by requests lib
@@ -45,10 +60,7 @@ class FacebookClient(object):
         )
 
     def send_request(self, request):
-        """
-        :type request: FacebookRequest
-        :rtype: FacebookResponse
-        """
+        # type: (FacebookRequest) -> FacebookResponse
         request_params = self._prepareRequest(request)
 
         res = self.send(
@@ -66,7 +78,17 @@ class FacebookClient(object):
 
         return response
 
-    def send(self, data, headers, method, params, url, files, timeout):
+    def send(
+        self,
+        data,  # type: Dict
+        headers,  # type: Dict
+        method,  # type: Text
+        params,  # type: Dict
+        url,  # type: Text
+        files,  # type: List[Tuple[Text, Tuple[Text, FacebookFile, Text]]]
+        timeout,  # type: int
+    ):
+        # type: (...) -> Any
         response = requests.request(
             method=method,
             url=url,
@@ -79,11 +101,7 @@ class FacebookClient(object):
         return response
 
     def send_batch_request(self, batch_request):
-        """
-        :type batch_request: FacebookBatchRequest
-
-        :rtype: FacebookBatchResponse
-        """
+        # type: (FacebookBatchRequest) -> FacebookBatchResponse
         batch_request.validate_batch_request_count()
         batch_request.prepare_batch_request()
         batch_response = self.send_request(request=batch_request)

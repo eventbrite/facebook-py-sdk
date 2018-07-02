@@ -6,10 +6,7 @@ from facebook_sdk.authentication import AccessToken, OAuth2Client
 from facebook_sdk.facebook import FacebookApp
 from tests import FakeOAuth2Client
 
-try:
-    from urllib.parse import quote_plus
-except ImportError:
-    from urllib import quote_plus
+from six.moves.urllib.parse import quote_plus
 
 
 class TestAccessToken(TestCase):
