@@ -4,6 +4,7 @@ import json
 from typing import (  # noqa: F401
     TYPE_CHECKING,
     Dict,
+    Generic,
     Iterable,
     List,
     Mapping,
@@ -20,6 +21,10 @@ from facebook_sdk.exceptions import (
     FacebookResponseException,
     FacebookSDKException,
 )
+from facebook_sdk.request import (  # noqa: F401
+    FacebookBatchRequest,
+    FacebookRequest,
+)
 from facebook_sdk.utils import (
     base_graph_url_endpoint,
     smart_text,
@@ -28,11 +33,18 @@ from facebook_sdk.utils import (
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
-    from facebook_sdk.request import FacebookBatchRequest, FacebookRequest  # noqa: F401
     ResponseRecord = TypedDict('ResponseRecord', {
         'name': Text,
         'response': 'FacebookResponse'
     })
+
+T = TypeVar('T', bound=FacebookRequest)
+
+
+class BaseResponse(Generic[T]):
+
+    def __init__(self, request):  # type (T) -> None
+        self.request = request
 
 
 class ResponsePaginationMixin(object):
@@ -64,7 +76,7 @@ class ResponsePaginationMixin(object):
         return request
 
 
-class FacebookResponse(ResponsePaginationMixin):
+class FacebookResponse(ResponsePaginationMixin, BaseResponse[FacebookRequest]):
     """ A Facebook Response
 
     """
@@ -77,9 +89,7 @@ class FacebookResponse(ResponsePaginationMixin):
         headers=None,  # type: Optional[Dict[Text, Text]]
     ):
         # type: (...) -> None
-        super(FacebookResponse, self).__init__()
-
-        self.request = request
+        super(FacebookResponse, self).__init__(request)
         self.body = body
         self.http_status_code = http_status_code
         self.headers = headers
@@ -109,9 +119,8 @@ class FacebookResponse(ResponsePaginationMixin):
         self.exception = FacebookResponseException.create(response=self)   # type: FacebookResponseException
 
 
-class FacebookBatchResponse(FacebookResponse):
+class FacebookBatchResponse(FacebookResponse, BaseResponse[FacebookBatchRequest]):
     """ A Facebook Batch Response"""
-    request = None  # type: FacebookBatchRequest
 
     def __init__(self, batch_request, batch_response):
         # type: (FacebookBatchRequest, FacebookResponse) -> None
