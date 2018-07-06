@@ -19,6 +19,7 @@ setup(
     author_email='zetahernandez@gmail.com',
     url='https://github.com/eventbrite/facebook-py-sdk',
     packages=['facebook_sdk'],
+    package_data={'facebook_sdk': ['py.typed']},
     install_requires=[
         'requests >=0.8',
         'six',
@@ -28,7 +29,6 @@ setup(
     extras_require={
         'testing': tests_require,
     },
-
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
