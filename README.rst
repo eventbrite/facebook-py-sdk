@@ -113,5 +113,5 @@ Running tests
 
 .. code-block:: bash
 
- ➜  facebook-python-sdk $ pip install -r requirements-dev.txt
+ ➜  facebook-python-sdk $ pip install -e .[testing]
  ➜  facebook-python-sdk $ pytest

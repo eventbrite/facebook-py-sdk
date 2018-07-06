@@ -1,8 +1,30 @@
 import os
 
-from facebook_sdk.authentication import OAuth2Client, AccessToken
+from typing import (  # noqa: F401
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    Mapping,
+    Optional,
+    Text,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
+
+from facebook_sdk.authentication import (
+    AccessToken,
+    OAuth2Client,
+)
 from facebook_sdk.client import FacebookClient
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST, METHOD_GET, METHOD_DELETE
+from facebook_sdk.constants import (
+    DEFAULT_GRAPH_VERSION,
+    METHOD_DELETE,
+    METHOD_GET,
+    METHOD_POST,
+)
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.request import (
@@ -10,25 +32,27 @@ from facebook_sdk.request import (
     FacebookRequest,
 )
 
+
+if TYPE_CHECKING:
+    from facebook_sdk.response import FacebookResponse, FacebookBatchResponse  # noqa: F401
+
 APP_ID_ENV_NAME = 'FACEBOOK_APP_ID'
 APP_SECRET_ENV_NAME = 'FACEBOOK_APP_SECRET'
 
 
 class FacebookApp(object):
     def __init__(self, app_id, app_secret):
-        """
-        :type id: str
-        :type secret: str
-        """
+        # type: (Text, Text) -> None
         super(FacebookApp, self).__init__()
-        self.id = app_id
+        self.app_id = app_id
         self.secret = app_secret
 
     def access_token(self):
+        # type: () -> AccessToken
         from facebook_sdk.authentication import AccessToken
         return AccessToken(
-            access_token='{id}|{secret}'.format(
-                id=self.id,
+            access_token='{app_id}|{secret}'.format(
+                app_id=self.app_id,
                 secret=self.secret,
             ),
         )
@@ -36,6 +60,7 @@ class FacebookApp(object):
 
 class Facebook(object):
     def __init__(self, **kwargs):
+        # type: (Any) -> None
         super(Facebook, self).__init__()
 
         self.config = {
@@ -63,11 +88,11 @@ class Facebook(object):
         self.default_graph_version = self.config.get('default_graph_version')
 
         if self.config.get('default_access_token'):
-            self.set_default_access_token(self.config.get('default_access_token'))
+            self.set_default_access_token(cast(Text, self.config.get('default_access_token')))
 
         self.app = FacebookApp(
-            app_id=self.config['app_id'],
-            app_secret=self.config['app_secret']
+            app_id=cast(Text, self.config['app_id']),
+            app_secret=cast(Text, self.config['app_secret']),
         )
         self.client = FacebookClient(request_timeout=kwargs.get('default_request_timeout'))
         self.oauth_client = OAuth2Client(
@@ -76,7 +101,17 @@ class Facebook(object):
             graph_version=self.default_graph_version,
         )
 
-    def request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None, timeout=None):
+    def request(
+        self,
+        method,  # type: Text
+        endpoint,  # type: Text
+        access_token=None,  # type: Optional[Text]
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+        timeout=None,  # type: Optional[int]
+    ):
+        # type: (...) -> FacebookRequest
         access_token = access_token or getattr(self, 'default_access_token', None)
         graph_version = graph_version or self.default_graph_version
 
@@ -91,7 +126,17 @@ class Facebook(object):
             timeout=timeout,
         )
 
-    def send_request(self, method, endpoint, access_token=None, params=None, headers=None, graph_version=None, timeout=None):
+    def send_request(
+        self,
+        method,  # type: Text
+        endpoint,  # type: Text
+        access_token=None,  # type: Optional[Text]
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+        timeout=None,  # type: Optional[int]
+    ):
+        # type: (...) -> FacebookResponse
         request = self.request(
             method=method,
             access_token=access_token,
@@ -106,12 +151,17 @@ class Facebook(object):
         return response
 
     def send_facebook_request(self, request):
-        """
-        :type request: FacebookRequest
-        """
+        # type: (FacebookRequest) -> FacebookResponse
         return self.client.send_request(request=request)
 
-    def send_batch_request(self, requests, access_token=None, graph_version=None, timeout=None):
+    def send_batch_request(
+        self,
+        requests,  # type: Union[Iterable[FacebookRequest], Mapping[Text, FacebookRequest]]
+        access_token=None,  # type: Optional[Text]
+        graph_version=None,  # type: Optional[Text]
+        timeout=None,  # type: Optional[int]
+    ):
+        # type: (...) -> FacebookBatchResponse
         access_token = access_token or getattr(self, 'default_access_token', None)
         graph_version = graph_version or self.default_graph_version
 
@@ -127,6 +177,7 @@ class Facebook(object):
         return response
 
     def set_default_access_token(self, access_token):
+        # type: (Union[Text, AccessToken]) -> None
         if isinstance(access_token, str):
             self.default_access_token = AccessToken(access_token=access_token)
         elif isinstance(access_token, AccessToken):
@@ -135,9 +186,17 @@ class Facebook(object):
             raise ValueError('The default access token must be of type "str" or AccessToken')
 
     def file_to_upload(self, path):
+        # type: (Text) -> FacebookFile
         return FacebookFile(path=path)
 
-    def post(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+    def post(
+        self,
+        endpoint,  # type: Text
+        access_token=None,  # type: Optional[Text]
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+    ):
         return self.send_request(
             method=METHOD_POST,
             access_token=access_token,
@@ -147,7 +206,14 @@ class Facebook(object):
             graph_version=graph_version,
         )
 
-    def get(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+    def get(
+        self,
+        endpoint,  # type: Text
+        access_token=None,  # type: Optional[Text]
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+    ):
         return self.send_request(
             method=METHOD_GET,
             access_token=access_token,
@@ -157,7 +223,14 @@ class Facebook(object):
             graph_version=graph_version,
         )
 
-    def delete(self, endpoint, access_token=None, params=None, headers=None, graph_version=None):
+    def delete(
+        self,
+        endpoint,  # type: Text
+        access_token=None,  # type: Optional[Text]
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+    ):
         return self.send_request(
             method=METHOD_DELETE,
             access_token=access_token,

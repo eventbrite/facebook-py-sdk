@@ -2,8 +2,22 @@ import json
 import uuid
 
 from six.moves.urllib.parse import urlencode
+from typing import (  # noqa: F401
+    TYPE_CHECKING,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Text,
+    Tuple,
+    Union,
+)
 
-from facebook_sdk.constants import DEFAULT_GRAPH_VERSION, METHOD_POST
+from facebook_sdk.constants import (
+    DEFAULT_GRAPH_VERSION,
+    METHOD_POST,
+)
 from facebook_sdk.exceptions import FacebookSDKException
 from facebook_sdk.facebook_file import FacebookFile
 from facebook_sdk.utils import (
@@ -13,7 +27,18 @@ from facebook_sdk.utils import (
     remove_params_from_url,
 )
 
+
 MAX_REQUEST_BY_BATCH = 50
+
+if TYPE_CHECKING:
+    from mypy_extensions import TypedDict
+    from facebook_sdk.facebook import FacebookApp  # noqa: F401
+    from facebook_sdk.authentication import AccessToken  # noqa: F401
+    RequestRecord = TypedDict('RequestRecord', {
+        'name': Text,
+        'request': 'FacebookRequest',
+        'attached_files': Text
+    }, total=False)
 
 
 class FacebookRequest(object):
@@ -21,8 +46,19 @@ class FacebookRequest(object):
 
     """
 
-    def __init__(self, app=None, access_token=None, method=None, endpoint=None, params=None, headers=None,
-                 graph_version=None, timeout=None):
+    def __init__(
+        self,
+        app=None,  # type: Optional[FacebookApp]
+        access_token=None,  # type: Optional[Union[Text, AccessToken]]
+        method=None,  # type: Optional[Text]
+        endpoint='',  # type: Text
+        params=None,  # type: Optional[Dict]
+        headers=None,  # type: Optional[Dict]
+        graph_version=None,  # type: Optional[Text]
+        timeout=None,  # type: Optional[int]
+    ):
+        # type: (...) -> None
+
         super(FacebookRequest, self).__init__()
 
         # Default empty dicts for dict params.
@@ -34,20 +70,20 @@ class FacebookRequest(object):
         self.access_token = access_token
         self.method = method
         self.endpoint = endpoint
-        self.graph_version = graph_version
-        self.headers = headers
-        self.params = params
+        self.graph_version = graph_version  # type: Text
+        self.headers = headers  # type: Dict
+        self.params = params   # type: Dict
         self.timeout = timeout
 
     @property
-    def endpoint(self):
+    def endpoint(self):  # type: () -> Text
         return self._endpoint
 
     @endpoint.setter
-    def endpoint(self, value):
+    def endpoint(self, value):  # type: (Text) -> None
         params = get_params_from_url(value)
-        if params.get('access_token'):
-            access_token = ''.join(params.get('access_token'))
+        if 'access_token' in params:
+            access_token = ''.join(params['access_token'])  # type: Text
             if not self.access_token:
                 self.access_token = access_token
             elif self.access_token != access_token:
@@ -59,7 +95,7 @@ class FacebookRequest(object):
         self._endpoint = remove_params_from_url(value, params_to_remove=['access_token', 'appsecret_proof'])
 
     @property
-    def access_token(self):
+    def access_token(self):  # type: () -> Optional[Text]
         return self._access_token
 
     @access_token.setter
@@ -70,7 +106,7 @@ class FacebookRequest(object):
             self._access_token = None
 
     @property
-    def params(self):
+    def params(self):  # type: () -> Dict
         """ The url params.
 
         :rtype: dict
@@ -82,7 +118,7 @@ class FacebookRequest(object):
         return params
 
     @params.setter
-    def params(self, value):
+    def params(self, value):  # type: (Dict) -> None
         if 'access_token' in value:
             self.access_token = value.get('access_token')
 
@@ -94,7 +130,7 @@ class FacebookRequest(object):
         self._params.update(value)
 
     @property
-    def post_params(self):
+    def post_params(self):  # type: () -> Optional[Dict]
         """ The post params.
 
         :rtype: object
@@ -105,7 +141,7 @@ class FacebookRequest(object):
         return None
 
     @property
-    def url(self):
+    def url(self):  # type: () -> Text
         """ The relative url to the graph api.
 
         :rtype: str
@@ -113,7 +149,7 @@ class FacebookRequest(object):
         return force_slash_prefix(self.graph_version) + force_slash_prefix(self.endpoint)
 
     @property
-    def batch_url(self):
+    def batch_url(self):  # type: () -> Text
         """ The relative url to the graph api.
 
         :rtype: str
@@ -122,12 +158,15 @@ class FacebookRequest(object):
         url = self.url
 
         if self.method != METHOD_POST and params:
-            return '{url}?{encoded_params}'.format(url=url, encoded_params=urlencode(convert_params_to_utf8(self.params)))
+            return '{url}?{encoded_params}'.format(
+                url=url,
+                encoded_params=urlencode(convert_params_to_utf8(self.params))
+            )
 
         return url
 
     @property
-    def url_encode_body(self):
+    def url_encode_body(self):  # type: () -> Optional[Text]
         """ Convert the post params to a urlencoded str
 
         :rtype: str
@@ -139,7 +178,7 @@ class FacebookRequest(object):
 
         return urlencode(convert_params_to_utf8(params))
 
-    def add_headers(self, headers):
+    def add_headers(self, headers):  # type: (Iterable[Dict]) -> None
         """ Append headers to the request.
 
         :param headers: a list of headers
@@ -147,8 +186,8 @@ class FacebookRequest(object):
         for header in headers:
             self.headers.update(header)
 
-    def _extract_files_from_params(self, value):
-        self.files = {}
+    def _extract_files_from_params(self, value):  # type: (Dict) -> None
+        self.files = {}  # type: Dict[Text, FacebookFile]
         for k, v in value.items():
             if isinstance(v, FacebookFile):
                 self.files[k] = v
@@ -156,10 +195,10 @@ class FacebookRequest(object):
         for k in self.files.keys():
             value.pop(k)
 
-    def contain_files(self):
+    def contain_files(self):  # type: () -> bool
         return bool(self.files)
 
-    def files_to_upload(self):
+    def files_to_upload(self):  # type: () -> List[Tuple[Text, Tuple[Text, FacebookFile, Optional[Text]]]]
         return [(name, (_file.name, _file, _file.mime_type)) for name, _file in self.files.items()]
 
 
@@ -168,7 +207,15 @@ class FacebookBatchRequest(FacebookRequest):
 
     """
 
-    def __init__(self, app=None, requests=None, access_token=None, graph_version=None, timeout=None):
+    def __init__(
+        self,
+        app=None,  # type: Optional[FacebookApp]
+        requests=None,  # type: Optional[Union[Iterable[FacebookRequest], Mapping[Text, FacebookRequest]]]
+        access_token=None,  # type: Optional[Union[Text, AccessToken]]
+        graph_version=None,  # type: Optional[Text]
+        timeout=None,  # type:  Optional[int]
+    ):
+        # type: (...) -> None
         """
         :param requests: a list of FacebookRequest
         :param access_token: the access token for the batch request
@@ -185,12 +232,13 @@ class FacebookBatchRequest(FacebookRequest):
             timeout=timeout,
         )
 
-        self.requests = []
+        self.requests = []  # type: List[RequestRecord]
 
         if requests:
             self.add(request=requests)
 
     def add(self, request, name=None):
+        # tpye: (Union[Iterable[FacebookRequest], Mapping[Text, FacebookRequest]], Optional[Text]) -> None
         """ Append a request or a set of requests to the batches.
 
         :param request: an instance, list or dict of FacebookRequest
@@ -215,7 +263,7 @@ class FacebookBatchRequest(FacebookRequest):
         request_to_add = {
             'name': str(name),
             'request': request,
-        }
+        }  # type: RequestRecord
 
         attached_files = self.extract_file_attachments(request)
         if attached_files:
@@ -223,7 +271,7 @@ class FacebookBatchRequest(FacebookRequest):
 
         self.requests.append(request_to_add)
 
-    def _add_access_token(self, request):
+    def _add_access_token(self, request):  # type: (FacebookRequest) -> None
         """ Set the batch request access token to the request if it wasn't provided.
 
         :type request: FacebookRequest
@@ -237,14 +285,15 @@ class FacebookBatchRequest(FacebookRequest):
 
             request.access_token = self.access_token
 
-    def prepare_batch_request(self):
+    def prepare_batch_request(self):  # type: () -> None
         params = {
-            'batch': self.requests_to_json(),
+            'batch': self.requests_to_json_str(),
             'include_headers': True,
         }
         self._params.update(params)
 
     def request_entity_to_batch_array(self, request, request_name, attached_files):
+        # type: (FacebookRequest, Text, Optional[Text]) -> Dict
         """ Convert a FacebookRequest entity to a request batch representation.
 
         :param request: a FacebookRequest
@@ -273,19 +322,19 @@ class FacebookBatchRequest(FacebookRequest):
 
         return batch
 
-    def requests_to_json(self):
+    def requests_to_json_str(self):  # type: () -> Text
         """ Convert the requests to json."""
         json_requests = [
             self.request_entity_to_batch_array(
-                request_name=request.get('name'),
-                request=request.get('request'),
+                request_name=request['name'],
+                request=request['request'],
                 attached_files=request.get('attached_files'),
             ) for request in self.requests
         ]
 
         return json.dumps(json_requests)
 
-    def validate_batch_request_count(self):
+    def validate_batch_request_count(self):  # type: () -> None
         """ Validate the request count before sending them as a batch.
 
             :raise FacebookSDKException
@@ -297,11 +346,8 @@ class FacebookBatchRequest(FacebookRequest):
         if requests_count > MAX_REQUEST_BY_BATCH:
             raise FacebookSDKException('The limit of requests in batch is %d' % MAX_REQUEST_BY_BATCH)
 
-    def extract_file_attachments(self, request):
-        """ Remove files from the request and return file names removed
-        :param request:
-        :return:
-        """
+    def extract_file_attachments(self, request):  # type: (FacebookRequest) -> Text
+        """ Remove files from the request and return file names removed."""
         file_names = []
         for _file in request.files.values():
             file_name = uuid.uuid4().hex
@@ -312,5 +358,5 @@ class FacebookBatchRequest(FacebookRequest):
 
         return ','.join(file_names)
 
-    def __iter__(self):
+    def __iter__(self):  # type: () -> Iterable[RequestRecord]
         return iter(self.requests)
