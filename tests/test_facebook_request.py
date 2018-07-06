@@ -209,7 +209,7 @@ class TestFacebookBatchRequest(TestCase):
     def test_request_entity_to_batch_array(self):
         pass
 
-    def test_requests_to_json(self):
+    def test_requests_to_json_str(self):
         pass
 
     def test_batch_request_with_files(self):

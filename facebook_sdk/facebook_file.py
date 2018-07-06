@@ -1,17 +1,23 @@
 import mimetypes
 import os
 
+from typing import (  # noqa: F401
+    Optional,
+    Text,
+)
+
 from facebook_sdk.exceptions import FacebookSDKException
 
 
 class FacebookFile(object):
     def __init__(self, path):
+        # tpye: (Text) -> None
         super(FacebookFile, self).__init__()
         self.path = path
         if not os.path.exists(self.path):
             raise FacebookSDKException('File does not exist.')
 
-    def read(self):
+    def read(self):  # type: () -> bytes
         """
         Override read to open, read and close fd after reading.
         """
@@ -19,9 +25,9 @@ class FacebookFile(object):
             return f.read()
 
     @property
-    def mime_type(self):
+    def mime_type(self):  # type: () -> Optional[Text]
         return mimetypes.guess_type(self.path)[0]
 
     @property
-    def name(self):
+    def name(self):  # type: () -> Text
         return os.path.basename(self.path)
