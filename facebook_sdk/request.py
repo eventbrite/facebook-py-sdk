@@ -67,7 +67,7 @@ class FacebookRequest(object):
         graph_version = graph_version or DEFAULT_GRAPH_VERSION
 
         self.app = app
-        self.access_token = access_token
+        self.access_token = access_token  # type: ignore
         self.method = method
         self.endpoint = endpoint
         self.graph_version = graph_version  # type: Text
@@ -77,7 +77,7 @@ class FacebookRequest(object):
 
     @property
     def endpoint(self):  # type: () -> Text
-        return self._endpoint
+        return self._endpoint  # type: ignore
 
     @endpoint.setter
     def endpoint(self, value):  # type: (Text) -> None
