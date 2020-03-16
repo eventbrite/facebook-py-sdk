@@ -1,7 +1,7 @@
 import datetime
 from unittest import TestCase
 
-from facebook_sdk import __VERSION__ as VERSION
+from facebook_sdk import __version__ as VERSION
 from facebook_sdk.authentication import AccessToken, OAuth2Client
 from facebook_sdk.facebook import FacebookApp
 from tests import FakeOAuth2Client

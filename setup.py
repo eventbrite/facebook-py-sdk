@@ -1,5 +1,5 @@
 from setuptools import setup
-from facebook_sdk import __VERSION__
+from facebook_sdk import __version__
 
 readme = open('README.rst').read()
 
@@ -11,7 +11,7 @@ tests_require = [
 
 setup(
     name='facebook-py-sdk',
-    version=__VERSION__,
+    version=__version__,
     description='Facebook Python SDK',
     long_description=readme,
     license="MIT",
