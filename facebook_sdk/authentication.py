@@ -16,7 +16,7 @@ from typing import (  # noqa: F401
 )
 
 from facebook_sdk import (
-    __VERSION__ as VERSION,
+    __version__ as VERSION,
     constants,
 )
 from facebook_sdk.exceptions import FacebookSDKException
