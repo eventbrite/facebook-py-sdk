@@ -15,7 +15,6 @@ install:
     - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then pip install mypy flake8; fi
 script:
     - if [[ $TRAVIS_PYTHON_VERSION == 3* && $TRAVIS_PYTHON_VERSION != "3.4" ]]; then mypy .; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install pytest -U; fi
     - pytest --cov=facebook_sdk tests
 after_success:
     - coveralls
