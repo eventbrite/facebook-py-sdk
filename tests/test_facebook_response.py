@@ -9,7 +9,7 @@ from tests import FakeFacebookRequest, FakeFacebookBatchRequest
 
 
 class TestFacebookResponse(TestCase):
-    def test_parse_body_and_headers(self):
+    def test_parse_body(self):
         expected_body = {'success': True}
         response = FacebookResponse(
             request=FakeFacebookRequest(),
