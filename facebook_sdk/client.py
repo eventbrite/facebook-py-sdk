@@ -69,6 +69,7 @@ class FacebookClient(object):
 
         response = FacebookResponse(
             request=request,
+            headers=res.headers,
             body=res.content,
             http_status_code=res.status_code,
         )
