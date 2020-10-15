@@ -5,7 +5,7 @@ readme = open('README.rst').read()
 
 tests_require = [
     'coveralls',
-    'pytest',
+    'pytest >= 4.1; python_version > "3.5"',
     'pytest-cov',
 ]
 
