@@ -14,7 +14,6 @@ class TestFacebookResponse(TestCase):
         response = FacebookResponse(
             request=FakeFacebookRequest(),
             body=json.dumps(expected_body),
-            headers=expected_headers,
             http_status_code=200
         )
         self.assertEqual(expected_body, response.json_body)
