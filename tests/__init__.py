@@ -51,6 +51,7 @@ class FakeFacebookBatchRequest(FacebookBatchRequest):
 
 
 class FakeResponse(object):
-    def __init__(self, content, status_code):
+    def __init__(self, content, headers, status_code):
         self.content = content
+        self.headers = headers
         self.status_code = status_code

@@ -27,6 +27,17 @@ class TestFacebookResponse(TestCase):
         )
         self.assertEqual(expected_body, response.json_body)
 
+    def test_check_for_headers(self):
+        expected_body = {'success': True}
+        expected_headers = {'x-fb-trace-id': '1234'}
+        response = FacebookResponse(
+            request=FakeFacebookRequest(),
+            body=json.dumps(expected_body),
+            headers=expected_headers,
+            http_status_code=200
+        )
+        self.assertEqual(expected_headers, response.headers)
+
     def test_raise_exception(self):
         response = FacebookResponse(
             request=FakeFacebookRequest(),

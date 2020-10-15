@@ -21,10 +21,12 @@ class TestFacebookClient(TestCase):
         self.fake_response = FakeResponse(
             status_code=200,
             content='{"data":[{"id":"123","name":"Foo"},{"id":"1337","name":"Bar"}]}',
+            headers='{"Content-Type": "application/json; charset=UTF-8","x-fb-trace-id": "1234"}',
         )
         self.fake_batch_response = FakeResponse(
             status_code=200,
             content='[{"code":"123","body":"Foo"}]',
+            headers='{"Content-Type": "application/json; charset=UTF-8","x-fb-trace-id": "1234"}',
         )
 
         self.client = FakeFacebookClient(fake_response=self.fake_response)
@@ -113,7 +115,9 @@ class TestFacebookClient(TestCase):
         self.client = FakeFacebookClient(
             fake_response=FakeResponse(
                 status_code=400,
-                content='{"error": {"code": 100}}'),
+                content='{"error": {"code": 100}}',
+                headers='{"Content-Type": "application/json; charset=UTF-8","x-fb-trace-id": "1234"}',
+            )
         )
         with self.assertRaises(FacebookResponseException):
             self.client.send_request(self.request)

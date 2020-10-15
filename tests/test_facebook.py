@@ -55,6 +55,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
+                headers='',
             ),
         )
         response = self.facebook.send_request(
@@ -77,6 +78,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
+                headers='',
             )
         )
         response = self.facebook.send_request(
@@ -95,6 +97,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='[{"code":"200","body":"Foo"}]',
+                headers='{"Content-Type": "application/json; charset=UTF-8","x-fb-trace-id": "1234"}'
             )
         )
         batches = [self.facebook.request(
@@ -120,6 +123,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='[{"code":"200","body":"Foo"}]',
+                headers='{"Content-Type": "application/json; charset=UTF-8","x-fb-trace-id": "1234"}'
             )
         )
         batches = [self.facebook.request(
@@ -141,6 +145,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
+                headers='',
             )
         )
         response = self.facebook.get(
@@ -153,6 +158,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
+                headers='',
             )
         )
         response = self.facebook.post(
@@ -165,6 +171,7 @@ class TestFacebook(TestCase):
             fake_response=FakeResponse(
                 status_code=200,
                 content='',
+                headers='',
             )
         )
         response = self.facebook.delete(
