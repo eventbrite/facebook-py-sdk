@@ -9,3 +9,9 @@
 ------------------
 - [PATCH] fix setup readme.txt
 
+
+1.2.3 (2021-07-06)
+------------------
+- Change Changelog extension for invoke release support
+- [MINOR][EB-166720] Setup deploy to CodeArtifact with CircleCI (#28)
+
