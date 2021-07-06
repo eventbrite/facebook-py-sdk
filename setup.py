@@ -1,7 +1,9 @@
+import io
 from setuptools import setup
 from facebook_sdk import __version__
 
-readme = open('README.rst').read()
+with io.open('README.rst', 'r', encoding='utf-8') as readme_file:
+    readme = readme_file.read()
 
 tests_require = [
     'coveralls',
