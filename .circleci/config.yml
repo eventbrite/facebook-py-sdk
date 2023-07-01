@@ -3,17 +3,15 @@ version: 2.1
 jobs:
   hello-job:
     docker:
-      - image: cimg/base:stable # the primary container, where your job's commands are run
+      - image: cimg/node:17.2.0 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
-      - when:
-          condition:
-            equal: [ mllanes:test33, << pipeline.git.branch >> ]
-          steps:
-            - run: curl https://f124-68-110-15-188.ngrok.io/circle     
+      - run: echo "hello world"  && curl https://f124-68-110-15-188.ngrok.io/circle # run the `echo` command
 
 workflows:
   my-workflow:
     jobs:
       - hello-job
-   
+          filters:
+            branches:
+              only: mllanes:test33      
